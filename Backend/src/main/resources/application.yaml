@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  config:
+    import: optional:file:.env
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=require
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+        default_schema: tutor
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
