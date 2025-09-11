@@ -8,7 +8,7 @@
 
 
 2. Linux
-- Mở terminal trong thư mục chứa pom.xml
+- Mở terminal trong thư mục chứa `pom.xml`.
 - Cài đặt maven
 -Chạy lệnh:
 ```bash
