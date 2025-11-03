@@ -1,7 +1,7 @@
 import PublicRoute from '@/config/PublicRoutes'
 import StudentRoute from '@/config/StudentRoute'
 import HomePage from '@/pages/HomePage/HomePage'
-import LandingPage from '@/pages/LandingPage/LandingPage'
+import TestPage from '@/pages/TestPage/TestPage'
 import ProfilePage from '@/pages/ProfilePage/ProfilePage'
 import { Route, Routes } from 'react-router-dom'
 
@@ -9,7 +9,7 @@ function App() {
   return (
     <Routes>
       <Route element={<PublicRoute />}>
-        <Route path='*' element={<LandingPage />} />
+        <Route path='*' element={<TestPage />} />
       </Route>
 
       <Route element={<StudentRoute />}>
