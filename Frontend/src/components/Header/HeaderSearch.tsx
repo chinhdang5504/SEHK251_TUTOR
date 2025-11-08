@@ -1,79 +1,168 @@
+// import { useState, useRef } from "react";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import {
+//   faAngleDown,
+//   faMagnifyingGlass,
+// } from "@fortawesome/free-solid-svg-icons";
+// import { faBell, faBellSlash } from "@fortawesome/free-regular-svg-icons";
+// import avatar from "@/assets/image/avatar.png";
+// import logo from "@/assets/image/logo.png";
+
+// interface User {
+//   userName: string;
+//   avatar: string;
+// }
+
+// interface HeaderProps {
+//   onSearch: (query: string) => void;
+//   loading?: boolean;
+//   notFound?: boolean;
+//   placeholder?: string;
+// }
+
+// const HeaderSearch = ({
+//   onSearch,
+//   loading = false,
+//   notFound = false,
+//   placeholder = "Search tutor by name, subject, department",
+// }: HeaderProps) => {
+//   const [notiOn, setNotiOn] = useState(false);
+//   const [showBoard, setShowBoard] = useState(false);
+//   const [searchText, setSearchText] = useState("");
+//   const [user] = useState<User>({ userName: "Tuong", avatar: avatar });
+
+//   const inputRef = useRef<HTMLInputElement | null>(null);
+//   const boardRef = useRef<HTMLDivElement | null>(null);
+
+//   const handleSearch = () => {
+//     if (!searchText.trim()) return;
+//     onSearch(searchText.trim());
+//   };
+
+//   return (
+//     <div className="fixed top-0 left-0 right-0 z-50 bg-black backdrop-blur-md flex items-center h-16 px-5">
+//       {/* 🔹 Logo */}
+//       <div className="flex items-center mr-10">
+//         <img src={logo} alt="logo" className="h-10 w-auto object-contain" />
+//       </div>
+
+//       {/* 🔹 Thanh Search */}
+//       <div className="flex-1 relative mx-[80px] flex items-center">
+//         <input
+//           ref={inputRef}
+//           type="text"
+//           value={searchText}
+//           onChange={(e) => setSearchText(e.target.value)}
+//           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+//           placeholder={placeholder}
+//           className="w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 py-2 text-sm text-gray-700 focus:outline-none focus:font-semibold transition-all"
+//         />
+//         <FontAwesomeIcon
+//           icon={faMagnifyingGlass}
+//           className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors cursor-pointer ${
+//             searchText ||
+//             (inputRef.current && inputRef.current === document.activeElement)
+//               ? "text-red-500"
+//               : "text-gray-400"
+//           }`}
+//           onClick={handleSearch}
+//         />
+//       </div>
+
+//       {/* 🔹 Khu vực bên phải */}
+//       <div className="flex items-center gap-4 ml-6">
+//         <button
+//           onClick={() => setNotiOn(!notiOn)}
+//           className="rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition p-[10px]"
+//         >
+//           <FontAwesomeIcon
+//             icon={notiOn ? faBell : faBellSlash}
+//             className={notiOn ? "text-red-500" : "text-gray-700"}
+//           />
+//         </button>
+
+//         <div className="relative" ref={boardRef}>
+//           <button
+//             onClick={() => setShowBoard(!showBoard)}
+//             className="bg-gray-100 inline-flex items-center gap-2 hover:bg-gray-200 transition rounded-[12px] p-[10px] px-[20px]"
+//           >
+//             <img
+//               src={user.avatar}
+//               alt="avatar"
+//               className="w-8 h-8 rounded-full object-cover"
+//             />
+//             <span className="text-gray-800 text-sm font-medium">
+//               {user.userName}
+//             </span>
+//             <FontAwesomeIcon icon={faAngleDown} className="text-gray-600" />
+//           </button>
+
+//           {showBoard && (
+//             <div className="absolute w-30 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg flex flex-col text-sm">
+//               <button className="px-4 py-3 text-left hover:bg-gray-100">
+//                 View Profile
+//               </button>
+//               <button className="px-4 py-3 text-left hover:bg-gray-100">
+//                 Log out
+//               </button>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default HeaderSearch;
 import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown, faMagnifyingGlass, faArrowDownWideShort } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDown,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
 import { faBell, faBellSlash } from "@fortawesome/free-regular-svg-icons";
 import avatar from "@/assets/image/avatar.png";
 import logo from "@/assets/image/logo.png";
-import axios from "axios";
-
-// 🔹 Cờ tổng: true = gọi API toàn bộ header (profile + search), false = dùng mock data
-const USE_HEADER_API = false;
-// 🔹 Cờ search riêng lẻ: true = gọi API search, false = dùng mock data search
-const USE_SEARCH_API = true;
 
 interface User {
   userName: string;
   avatar: string;
 }
 
-interface SearchResult {
-  id: number;
-  name: string;
+interface HeaderProps {
+  onSearch: (query: string) => void;
+  loading?: boolean;
+  notFound?: boolean;
+  placeholder?: string;
 }
 
-const Header = () => {
+const HeaderSearch = ({
+  onSearch,
+  loading = false,
+  notFound = false,
+  placeholder = "Search tutor by name, subject, department",
+}: HeaderProps) => {
   const [notiOn, setNotiOn] = useState(false);
   const [showBoard, setShowBoard] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [user, setUser] = useState<User>({ userName: "Tuong", avatar: avatar });
+  const [user] = useState<User>({ userName: "Tuong", avatar: avatar });
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
 
-  const mockResults: SearchResult[] = [
-    { id: 1, name: "Mock Result 1" },
-    { id: 2, name: "Mock Result 2" },
-    { id: 3, name: "Mock Result 3" },
-  ];
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isStudent = location.pathname.startsWith("/student");
+  const isTutor = location.pathname.startsWith("/tutor");
 
-  // 🔹 Fetch user info (profile) nếu USE_HEADER_API = true
-  const fetchProfile = async () => {
-    if (USE_HEADER_API) {
-      try {
-        // 🔹 Request: GET /api/profile
-        // 🔹 Expected Response: { userName: "Tuong", avatar: "url_avatar" }
-        const res = await axios.get("/api/profile");
-        setUser(res.data);
-      } catch (error) {
-        console.error("Profile API error:", error);
-      }
-    }
+  // 🔹 Xử lý search
+  const handleSearch = () => {
+    if (!searchText.trim()) return;
+    onSearch(searchText.trim());
   };
 
-  const fetchSearch = async (query: string) => {
-    if (!query) {
-      setResults([]);
-      return;
-    }
-
-    if (USE_SEARCH_API) {
-      try {
-        // 🔹 Request: GET /api/search?query=${query}
-        // 🔹 Expected Response: [{ id: 1, name: "Result 1" }, ...]
-        const res = await axios.get("/api/search", { params: { query } });
-        setResults(res.data);
-      } catch (error) {
-        console.error("Search API error:", error);
-        setResults([]);
-      }
-    } else {
-      setResults(mockResults.filter(item => item.name.toLowerCase().includes(query.toLowerCase())));
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile(); // 🔹 Gọi API profile khi header load
-  }, []);
-
+  // 🔹 Đóng dropdown khi click ngoài
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (boardRef.current && !boardRef.current.contains(e.target as Node)) {
@@ -84,62 +173,57 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 🔹 Handlers
+  const handleToggleBoard = () => setShowBoard(prev => !prev);
+  const handleToggleNoti = () => setNotiOn(prev => !prev);
+
+  const handleViewProfile = () => {
+    if (isStudent) navigate("/student/profile");
+    else if (isTutor) navigate("/tutor/profile");
+    else navigate("/");
+    setShowBoard(false); // đóng dropdown sau khi click
+  };
+
+  const handleLogout = () => {
+    console.log("Logout clicked");
+    setShowBoard(false); // đóng dropdown sau khi logout
+    // TODO: thêm logic logout thực tế
+  };
+
   return (
-    <>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-md flex items-center h-16 px-5">
       {/* Logo */}
-      <div className="fixed z-50 flex items-center" style={{ top: "20px", left: "20px" }}>
+      <div className="flex items-center mr-10">
         <img src={logo} alt="logo" className="h-10 w-auto object-contain" />
       </div>
 
-      {/* Search bar */}
-      <div className="fixed z-50 left-[350px] right-[400px] top-5 flex items-center">
-        <div className="relative w-full">
-          <input
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                fetchSearch(searchText); // 🔹 Chỉ gọi search khi nhấn Enter
-              }
-            }}
-            placeholder="Search"
-            className="w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 py-2 text-sm text-gray-700 focus:outline-none focus:font-semibold transition-all"
-          />
-          {/* Icon search */}
-          <FontAwesomeIcon
-            icon={faMagnifyingGlass}
-            className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${
-              searchText || document.activeElement === document.querySelector('input')
-                ? "text-red-500"
-                : "text-gray-400"
-            }`}
-          />
-
-          {/* Search results dropdown */}
-          {results.length > 0 && (
-            <div className="absolute top-full left-0 w-full bg-white border border-gray-200 rounded-[12px] shadow-lg z-10">
-              {results.map(r => (
-                <div key={r.id} className="px-3 py-2 hover:bg-gray-100 cursor-pointer">
-                  {r.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Icon sort */}
+      {/* Thanh Search */}
+      <div className="flex-1 relative mx-[80px] flex items-center">
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder={placeholder}
+          className="w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 py-2 text-sm text-gray-700 focus:outline-none focus:font-semibold transition-all"
+        />
         <FontAwesomeIcon
-          icon={faArrowDownWideShort}
-          className="text-gray-500 ml-5 text-lg cursor-pointer active:text-red-500 transition-colors"
+          icon={faMagnifyingGlass}
+          className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors cursor-pointer ${
+            searchText ||
+            (inputRef.current && inputRef.current === document.activeElement)
+              ? "text-red-500"
+              : "text-gray-400"
+          }`}
+          onClick={handleSearch}
         />
       </div>
 
-      {/* Right side: Notification + Avatar */}
-      <div className="fixed z-50 flex items-center gap-4" style={{ top: "20px", right: "20px" }}>
-        {/* Notification button */}
+      {/* Khu vực bên phải */}
+      <div className="flex items-center gap-4 ml-6">
         <button
-          onClick={() => setNotiOn(!notiOn)}
+          onClick={handleToggleNoti}
           className="rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition p-[10px]"
         >
           <FontAwesomeIcon
@@ -148,11 +232,11 @@ const Header = () => {
           />
         </button>
 
-        {/* Avatar + Dropdown */}
+        {/* Dropdown */}
         <div className="relative" ref={boardRef}>
           <button
-            onClick={() => setShowBoard(!showBoard)}
-            className="bg-gray-100 inline-flex items-center gap-2 hover:bg-gray-200 transition rounded-[12px] p-[10px] px-[20px] w-auto"
+            onClick={handleToggleBoard}
+            className="bg-gray-100 inline-flex items-center gap-2 hover:bg-gray-200 transition rounded-[12px] p-[10px] px-[20px]"
           >
             <img
               src={user.avatar}
@@ -163,17 +247,26 @@ const Header = () => {
             <FontAwesomeIcon icon={faAngleDown} className="text-gray-600" />
           </button>
 
-          {/* Dropdown */}
           {showBoard && (
-            <div className="absolute w-30 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg flex flex-col text-sm">
-              <button className="px-4 py-3 text-left hover:bg-gray-100">View Profile</button>
-              <button className="px-4 py-3 text-left hover:bg-gray-100">Log out</button>
+            <div className="absolute w-36 right-0 mt-2 bg-white border border-gray-200 rounded-[12px] shadow-lg flex flex-col text-sm">
+              <button
+                className="px-4 py-3 text-left hover:bg-gray-100"
+                onClick={handleViewProfile}
+              >
+                View Profile
+              </button>
+              <button
+                className="px-4 py-3 text-left hover:bg-gray-100"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
             </div>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Header;
+export default HeaderSearch;

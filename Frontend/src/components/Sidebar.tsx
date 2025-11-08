@@ -25,14 +25,14 @@ const Sidebar = () => {
   const sidebarItem =
     mockUser.role === 'STUDENT'
       ? [
-          { path: '/student', content: 'Dashboard', icon: faHouse },
+          { path: '/student/dashboard', content: 'Dashboard', icon: faHouse },
           { path: '/student/tutors', content: 'Tutor', icon: faBook },
           { path: '/student/public-session', content: 'Public sessions', icon: faStar },
           { path: '/student/library', content: 'HCMUT-LIBRARY', icon: faCalendar },
         ]
       : [
-          { path: '/tutor', content: 'Dashboard', icon: faHouse },
-          { path: '/tutor/session-detail', content: 'Session Detail', icon: faBook },
+          { path: '/tutor/dashboard', content: 'Dashboard', icon: faHouse },
+          { path: '/tutor/session-details', content: 'Session Detail', icon: faBook },
           { path: '/tutor/library', content: 'Library', icon: faCalendar },
         ];
 

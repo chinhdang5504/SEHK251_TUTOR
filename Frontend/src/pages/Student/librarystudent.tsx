@@ -14,33 +14,24 @@ import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
 
+// =================================================================
+// 2. MOCK DATA
+// =================================================================
 import { allDocuments } from '@/mocks/library.mock'; 
 
-export type Document = {
+type Document = {
   id: number;
   Author: string;
   DocumentTitle: string;
 };
 
-
 // =================================================================
 // 3. COMPONENT CHÍNH: LibraryPage
 // =================================================================
-const LibraryPage = () => {
+const LibraryStudentPage = () => {
 
   // --- State ---
   const [currentPage, setCurrentPage] = useState(1);
-  const [fileName, setFileName] = useState('');
-
-  // --- Logic xử lý sự kiện ---
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFileName(e.target.files[0].name);
-    } else {
-      setFileName('');
-    }
-  };
-  
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
@@ -62,7 +53,6 @@ const LibraryPage = () => {
 
         {/* Nội dung chính */}
         <main className="flex-1 ml-0 xl:ml-[282px] pt-24 p-8 flex flex-col">
-          
           <div className="flex justify-between items-center p-6 w-3/4">
             <h1 className="text-3xl font-bold text-[#B3261E]">Library</h1>
           </div>
@@ -75,16 +65,6 @@ const LibraryPage = () => {
             onPageChange={handlePageChange}
           />
 
-          {/* Div đệm */}
-          <div className="flex-grow"></div>
-
-          {/* Box 2: Share Document */}
-          <ProgressReportBox
-            fileName={fileName}
-            onFileChange={handleFileChange}
-            className="mt-8" // Giữ khoảng cách
-          />
-
         </main>
       </div>
       <Footer />
@@ -92,7 +72,7 @@ const LibraryPage = () => {
   );
 }; 
 
-export default LibraryPage;
+export default LibraryStudentPage;
 
 // =================================================================
 // 4. CÁC COMPONENT CON
@@ -178,45 +158,3 @@ const LibraryTable = ({ documents, currentPage, totalPages, onPageChange }: Libr
 };
 
 
-// --- Component con 2: ProgressReportBox (Upload) ---
-type ProgressReportProps = {
-  fileName: string;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string; 
-};
-
-const ProgressReportBox = ({ fileName, onFileChange, className = '' }: ProgressReportProps) => {
-  return (
-    <section className={`bg-white rounded-lg shadow-md p-6 w-4/5 ${className}`}>
-      <h2 className="text-xl font-bold text-[#B3261E] mb-1 ">Share Document</h2>
-      <div className="h-0.5 w-3/4 bg-gradient-to-r from-[#B3261E] to-transparent mb-4"></div>
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
-            Upload Document
-          </label>
-          <p className="text-xs text-gray-500 mt-1">Supported formats: PDF, Docx. Max file size: 10MB</p>
-        </div>
-        
-        <div>
-          <input 
-            type="file" 
-            id="report-upload" 
-            className="hidden"
-            onChange={onFileChange}
-          />
-          <label 
-            htmlFor="report-upload"
-            className="cursor-pointer text-sm text-[#B3261E] font-semibold bg-red-100 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors"
-          >
-            Update
-          </label>
-          <span className="ml-4 text-sm text-gray-500">
-            {fileName ? fileName : "Không có tệp được chọn"}
-          </span>
-        </div>
-      </div>
-    </section>
-  );
-};
