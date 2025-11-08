@@ -12,14 +12,13 @@ import TestPage from '@/pages/TestPage/TestPage'
 
 import StudentDashboard from '@/pages/Student/dashboard'
 import PublicSession from '@/pages/Student/publicsession'
-import TutorList from '@/pages/Student/Tutor'
+import TutorList from '@/pages/Student/tutor'
 import Profile from '@/pages/Student/profile'
 
 import TutorDashboard from '@/pages/Tutor/dashboard'
 import SessionDetail from '@/pages/Tutor/sessiondetail'
 import TutorInfo from '@/pages/Student/TutorInfo'
 import LibraryPage from '@/pages/hcmutLibrary/library'
-
 
 // ================= ROUTER =================
 const router = createBrowserRouter([
@@ -28,8 +27,8 @@ const router = createBrowserRouter([
     element: <PublicRoute />,
     children: [
       { path: '/', element: <HomePage /> },
-      { path: '/test', element: <TestPage /> },
-    ],
+      { path: '/test', element: <TestPage /> }
+    ]
   },
 
   // 🎓 Student pages
@@ -42,8 +41,8 @@ const router = createBrowserRouter([
       { path: 'tutors', element: <TutorList /> },
       { path: 'library', element: <LibraryPage /> },
       { path: 'tutor-info/:id', element: <TutorInfo /> },
-      { path: 'profile', element: <Profile /> },
-    ],
+      { path: 'profile', element: <Profile /> }
+    ]
   },
 
   // 🧑‍🏫 Tutor pages
@@ -53,10 +52,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <TutorDashboard /> },
       { path: 'session-detail', element: <SessionDetail /> },
-      { path: 'library', element: <LibraryPage /> },
-    ],
-  },
-
+      { path: 'library', element: <LibraryPage /> }
+    ]
+  }
 ])
 
 export default router

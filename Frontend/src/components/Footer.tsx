@@ -1,4 +1,3 @@
-// src/components/Footer.jsx
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,

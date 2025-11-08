@@ -1,36 +1,33 @@
-import { useState } from "react"
-import { mockTutors } from "@/mocks/tutor.mock"
+import { useQuery } from '@tanstack/react-query'
+import tutorApi from '@/api/tutorApi'
+import { mockTutors } from '@/mocks/tutor.mock'
 
-export const useTutorSearch = () => {
-  const USE_API = false
-  const [tutors, setTutors] = useState(mockTutors)
-  const [loading, setLoading] = useState(false)
-  const [notFound, setNotFound] = useState(false)
-
-  const fetchTutors = async (query: string) => {
-    setLoading(true)
-    setNotFound(false)
-
-    try {
-      if (USE_API) {
-        // TODO: Gọi API thật sau này
-      } else {
-        const filtered = mockTutors.filter(
-          (t) =>
-            t.fullName.toLowerCase().includes(query.toLowerCase()) ||
-            t.subject.toLowerCase().includes(query.toLowerCase()) ||
-            t.department.name.toLowerCase().includes(query.toLowerCase())
-        )
-        setTutors(filtered)
-        setNotFound(filtered.length === 0)
+export const useTutorSearch = (query: string, useApi = false) => {
+  return useQuery({
+    queryKey: ['tutorSearch', query], 
+    queryFn: async () => {
+      if (useApi) {
+        const data = await tutorApi.searchTutor(query)
+        return data
       }
-    } catch (err) {
-      console.error(err)
-      setNotFound(true)
-    } finally {
-      setLoading(false)
-    }
-  }
 
-  return { tutors, loading, notFound, fetchTutors }
+      // <--- Mock data filtering when API is disabled --->
+      const filtered = mockTutors.filter(
+        (t) =>
+          t.fullName.toLowerCase().includes(query.toLowerCase()) ||
+          t.subject.toLowerCase().includes(query.toLowerCase()) ||
+          t.faculty.name.toLowerCase().includes(query.toLowerCase())
+      )
+
+      // <--- Simulate "not found" or empty results --->
+      if (filtered.length === 0) {
+        throw new Error('No tutors found')
+      }
+
+      return filtered
+    },
+    enabled: !!query, 
+    retry: 1, 
+    staleTime: 1000 * 60 * 5, 
+  })
 }

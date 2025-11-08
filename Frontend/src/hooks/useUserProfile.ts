@@ -1,30 +1,18 @@
-import { useEffect, useState } from "react";
-import userApi from "@/api/userApi";
-import { mockUser } from "@/mocks/user.mock";
+import userApi from '@/api/userApi'
+import { mockUser } from '@/mocks/user.mock'
+import { useQuery } from '@tanstack/react-query'
 
 export const useUserProfile = (useApi = false) => {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        if (useApi) {
-          const res = await userApi.getProfile();
-          setUser(res.data);
-        } else {
-          setUser(mockUser);
-        }
-      } catch (error) {
-        console.error("Failed to load user profile:", error);
-        setUser(mockUser);
-      } finally {
-        setLoading(false);
+  return useQuery({
+    queryKey: ['userProfile'], 
+    queryFn: async () => {
+      if (useApi) {
+        const data = await userApi.getProfile()
+        return data
       }
-    };
-
-    fetchProfile();
-  }, [useApi]);
-
-  return { user, loading, setUser };
-};
+      return mockUser
+    },
+    staleTime: 1000 * 60 * 5, 
+    retry: 1, 
+  })
+}

@@ -1,16 +1,19 @@
 export const mockUser = {
-  fullname: "Mai Anh Tuong",
-  email: "anhtuong@hcmut.edu.vn",
-  studentId: "2313812",
-  faculty: "Computer Science and Engineering",
-  sex: "Male",
-  identificationNumber: "066345776527",
-  dateOfBirth: "24/01/2005",
-  avatarUrl: "",
+  fullName: 'John Doe',
+  userName: 'johndoe',
+  role: 'student',
+  email: 'john@example.com',
+  studentId: 'S123456',
+  tutorId:'T987654',
+  faculty: 'Science',
+  sex: 'Male',
+  identificationNumber: '123456789',
+  dateOfBirth: '2000-01-01',
+  avatar: '', 
   supportPreferences: {
-    subject: "",
-    tutor: "",
-    preferredFaculty: "",
-    description: "",
-  },
-};
+    subject: '',
+    tutor: '',
+    preferredFaculty: '',
+    description: ''
+  }
+}

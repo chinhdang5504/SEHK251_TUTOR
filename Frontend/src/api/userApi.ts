@@ -1,15 +1,17 @@
-import axiosClient from "./axiosClient";
+import PrivateAxios from '@/lib/privateAxios'
 
 const userApi = {
+  /* <--- Fetch user profile ---> */
   async getProfile() {
-    const response = await axiosClient.get("/user/profile");
-    return response;
+    const res = await PrivateAxios.get('/user/profile')
+    return res.data 
   },
 
+  /* <--- Update user profile ---> */
   async updateProfile(data: any) {
-    const response = await axiosClient.put("/user/profile", data);
-    return response;
+    const res = await PrivateAxios.put('/user/profile', data)
+    return res.data
   },
-};
+}
 
-export default userApi;
+export default userApi
