@@ -1,23 +1,33 @@
-import { useParams } from "react-router-dom";
-import Header from "@/components/Header/Header";
-import Sidebar from "@/components/Sidebar";
-import Footer from "@/components/Footer";
-import TutorCalendar from "@/components/TutorCalendar";
-import { Button } from "@/components/ui/button";
-import { useTutorInfo } from "@/hooks/useTutorInfo";
+import { useParams } from 'react-router-dom'
+import Header from '@/components/Header/Header'
+import Sidebar from '@/components/Sidebar'
+import Footer from '@/components/Footer'
+import TutorCalendar from '@/components/TutorCalendar'
+import { Button } from '@/components/ui/button'
+import { useTutorInfo } from '@/hooks/useTutorInfo'
+import type { ClassItem } from '@/types/tutor'
 
 const TutorInfo = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>()
+  const USE_API = false
   const {
     tutor,
+    tutorLoading,
     classes,
+    classesLoading,
+    enrolling,
+    enrollClass,
+    handleDateSelect,
     isAvailable,
     availableHours,
-    handleEnroll,
-    handleDateSelect,
-  } = useTutorInfo(id, false); // false = mock, true = call API
+    availabilityLoading,
+  } = useTutorInfo(id, USE_API)
 
-  if (!tutor) return <div className="text-center mt-10">Tutor not found</div>;
+  if (tutorLoading || classesLoading)
+    return <div className="text-center mt-10 text-gray-500">Loading tutor information...</div>
+
+  if (!tutor)
+    return <div className="text-center mt-10 text-gray-600 font-medium">Tutor not found</div>
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -25,12 +35,17 @@ const TutorInfo = () => {
       <div className="flex flex-1 relative">
         <Sidebar />
 
+        {/* --- Main Content --- */}
         <main className="flex-1 overflow-y-auto hide-scrollbar p-6 flex flex-col gap-6 mt-[50px] ml-0 xl:ml-[282px] mr-72">
           {/* Tutor Info */}
           <div className="border p-4 rounded-[12px]">
             <h2 className="font-semibold text-gray-700 mb-2 text-lg">Tutor Information</h2>
             <div className="flex items-start gap-12">
-              <img src={tutor.avatarUrl} alt={tutor.fullName} className="w-35 h-35 rounded-[2px] object-cover" />
+              <img
+                src={tutor.avatar}
+                alt={tutor.fullName}
+                className="w-35 h-35 rounded-[2px] object-cover"
+              />
               <div className="flex-1 space-y-2 text-sm">
                 <p><strong>Tutor:</strong> {tutor.fullName}</p>
                 <p><strong>Faculty:</strong> {tutor.faculty}</p>
@@ -55,8 +70,11 @@ const TutorInfo = () => {
                 </tr>
               </thead>
               <tbody>
-                {classes.map(cls => (
-                  <tr key={cls.id} className="border-b border-gray-100 hover:bg-gray-50">
+                {classes.map((cls: ClassItem) => (
+                  <tr
+                    key={cls.id}
+                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-4 py-3">{cls.date}</td>
                     <td className="px-4 py-3">{cls.time}</td>
                     <td className="px-4 py-3">{cls.subject}</td>
@@ -64,11 +82,17 @@ const TutorInfo = () => {
                     <td className="px-4 py-3">
                       <Button
                         size="sm"
-                        variant={cls.status === "Full" || cls.status === "Enrolled" ? "secondary" : "destructive"}
-                        disabled={cls.status !== "Enroll"}
-                        onClick={() => handleEnroll(cls)}
+                        variant={
+                          cls.status === 'Full' || cls.status === 'Enrolled'
+                            ? 'secondary'
+                            : 'destructive'
+                        }
+                        disabled={cls.status !== 'Enroll' || enrolling}
+                        onClick={() => enrollClass(cls.id)}
                       >
-                        {cls.status}
+                        {enrolling && cls.status === 'Enroll'
+                          ? 'Enrolling...'
+                          : cls.status}
                       </Button>
                     </td>
                   </tr>
@@ -78,13 +102,22 @@ const TutorInfo = () => {
           </div>
         </main>
 
-        {/* Right Sidebar */}
+        {/* --- Right Sidebar --- */}
         <div className="w-72 flex-shrink-0 fixed right-0 top-[64px] h-[calc(100vh-50px)] p-4 flex flex-col gap-6">
           <div className="bg-white rounded-[12px] border border-gray-300 p-4">
             <TutorCalendar onSelectDate={handleDateSelect} />
           </div>
-          {isAvailable !== null && (
-            <div className={`p-4 rounded-[12px] text-center ${isAvailable ? "bg-red-600 text-white" : "bg-gray-200 text-black"}`}>
+
+          {availabilityLoading ? (
+            <div className="p-4 rounded-[12px] text-center bg-gray-100 text-gray-500">
+              Checking availability...
+            </div>
+          ) : isAvailable !== null && (
+            <div
+              className={`p-4 rounded-[12px] text-center ${
+                isAvailable ? 'bg-red-600 text-white' : 'bg-gray-200 text-black'
+              }`}
+            >
               {isAvailable ? (
                 <>
                   <p className="font-semibold mb-1">Available to contact</p>
@@ -100,7 +133,7 @@ const TutorInfo = () => {
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default TutorInfo;
+export default TutorInfo

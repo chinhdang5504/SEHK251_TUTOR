@@ -1,31 +1,39 @@
-import axiosClient from "./axiosClient";
+import PrivateAxios from '@/lib/privateAxios'
 
 const tutorApi = {
-  // 🔍 Tìm kiếm tutor
+  /* <--- Search tutors by query keyword ---> */
   async searchTutor(query: string) {
-    const response = await axiosClient.get(`/tutors/search`, {
-      params: { q: query },
-    });
-    return response;
+    const res = await PrivateAxios.get('/tutors/search', {
+      params: { q: query }, 
+    })
+    return res.data 
   },
 
-  // 📘 Lấy thông tin tutor theo ID
+  /* <--- Get tutor information by ID ---> */
   async getTutorById(id: string) {
-    const response = await axiosClient.get(`/tutors/${id}`);
-    return response;
+    const res = await PrivateAxios.get(`/tutors/${id}`)
+    return res.data
   },
 
-  // 🧩 Lấy danh sách lớp của tutor
+  /* <--- Get all classes of a tutor ---> */
   async getClassesByTutor(id: string) {
-    const response = await axiosClient.get(`/tutors/${id}/classes`);
-    return response;
+    const res = await PrivateAxios.get(`/tutors/${id}/classes`)
+    return res.data
   },
 
-  // 📝 Ghi danh vào lớp học
-  async enrollClass(classId: number) {
-    const response = await axiosClient.post(`/classes/${classId}/enroll`);
-    return response;
+  /* <--- Enroll a class ---> */
+  async enrollClass(id: string) {
+    const res = await PrivateAxios.post(`/classes/${id}/enroll`)
+    return res.data
   },
-};
 
-export default tutorApi;
+  /* <--- Get tutor availability by date/time ---> */
+  async getTutorAvailability(id: string, date: string) {
+    const res = await PrivateAxios.get(`/tutors/${id}/availability`, {
+      params: { date},
+    })
+    return res.data
+  },
+}
+
+export default tutorApi

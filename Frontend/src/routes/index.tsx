@@ -21,7 +21,6 @@ import TutorInfo from '@/pages/Student/TutorInfo'
 import LibraryPage from '@/pages/hcmutLibrary/library'
 import SessionDetailsPage from '@/pages/Tutor/sessiondetail'
 
-
 // ================= ROUTER =================
 const router = createBrowserRouter([
   // 🌐 Public pages
@@ -29,8 +28,8 @@ const router = createBrowserRouter([
     element: <PublicRoute />,
     children: [
       { path: '/', element: <HomePage /> },
-      { path: '/test', element: <TestPage /> },
-    ],
+      { path: '/test', element: <TestPage /> }
+    ]
   },
 
   // 🎓 Student pages
@@ -43,8 +42,8 @@ const router = createBrowserRouter([
       { path: 'tutors', element: <TutorList /> },
       { path: 'library', element: <LibraryStudentPage /> },
       { path: 'tutor-info/:id', element: <TutorInfo /> },
-      { path: 'profile', element: <Profile /> },
-    ],
+      { path: 'profile', element: <Profile /> }
+    ]
   },
 
   // 🧑‍🏫 Tutor pages
@@ -53,11 +52,11 @@ const router = createBrowserRouter([
     element: <TutorRoute />,
     children: [
       { index: true, element: <TutorDashboard /> },
-      { path: 'session-details', element: <SessionDetailsPage /> },
-      { path: 'library', element: <LibraryPage /> },
-    ],
-  },
-
+      // SỬA Ở ĐÂY: Path là 'session-detail' (để khớp Sidebar), Component là SessionDetailsPage (để khớp import)
+      { path: 'session-detail', element: <SessionDetailsPage /> },
+      { path: 'library', element: <LibraryPage /> }
+    ]
+  }
 ])
 
 export default router
