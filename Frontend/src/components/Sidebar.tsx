@@ -24,7 +24,7 @@ const Sidebar = () => {
 
   /* <--- Sidebar items differ based on user role ---> */
   const sidebarItem =
-    role === 'student'
+    role === 'tutor'
       ? [
           { path: '/student/dashboard', content: 'Dashboard', icon: faHouse },
           { path: '/student/tutors', content: 'Tutor', icon: faBook },

@@ -6,12 +6,12 @@ import { Route, Routes } from 'react-router-dom'
 // Import các trang
 import Profile from './pages/Student/profile'
 import LibraryPage from './pages/hcmutLibrary/library'
-import SessionDetailsPage from './pages/Tutor/sessiondetail'
-import DashboardTutorPage from './pages/Tutor/dashboard'
+import SessionDetailsPage from './pages/Tutor/SessionDetailsPage/sessiondetail'
+import DashboardTutorPage from './pages/Tutor/Dashboard/dashboard'
 import SearchTutor from "@/pages/Student/tutor"
 import TutorInfo from '@/pages/Student/TutorInfo'
 import PublicSessions from '@/pages/Student/publicsession'
-import DashboardStudentPage from './pages/Student/dashboard'
+import DashboardStudentPage from './pages/Student/Dashboard/dashboard'
 import LibraryStudentPage from './pages/Student/librarystudent'
 
 function App() {

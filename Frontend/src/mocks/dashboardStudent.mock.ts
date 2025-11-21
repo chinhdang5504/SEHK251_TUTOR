@@ -1,4 +1,4 @@
-import type { RegisteredSession, WeekDay } from "@/pages/Student/dashboard";
+import type { RegisteredSession, WeekDay } from "@/pages/Student/Dashboard/dashboard.types";
 
 export const mockAllRegisteredSessions: RegisteredSession[] = [
   // Tuần 1

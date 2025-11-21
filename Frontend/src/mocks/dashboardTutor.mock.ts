@@ -1,4 +1,4 @@
-import type { Session, Notification, Feedback } from '@/pages/Tutor/dashboard';
+import type { Session, Notification, Feedback } from '@/pages/Tutor/Dashboard/mysessions.types';
 
 export const allMySessions: Session[] = [
   { id: 1, date: '30/11/2025', time: '7:00', subject: 'Advanced Programming', room: 'H-101', status: 'Canceled' },

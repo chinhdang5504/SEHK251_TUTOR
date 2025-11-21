@@ -10,13 +10,13 @@ import HomePage from '@/pages/HomePage/HomePage'
 
 import TestPage from '@/pages/TestPage/TestPage'
 
-import StudentDashboard from '@/pages/Student/dashboard'
+import StudentDashboard from '@/pages/Student/Dashboard/dashboard'
 import PublicSession from '@/pages/Student/publicsession'
 import TutorList from '@/pages/Student/tutor'
 import Profile from '@/pages/Student/profile'
 import LibraryStudentPage from '@/pages/Student/librarystudent'
 
-import TutorDashboard from '@/pages/Tutor/dashboard'
+import TutorDashboard from '@/pages/Tutor/Dashboard/dashboard'
 import TutorInfo from '@/pages/Student/TutorInfo'
 import LibraryPage from '@/pages/hcmutLibrary/library'
 import SessionDetailsPage from '@/pages/Tutor/sessiondetail'

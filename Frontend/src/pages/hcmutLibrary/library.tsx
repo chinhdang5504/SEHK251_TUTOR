@@ -1,44 +1,60 @@
-// src/pages/LibraryPage.tsx
+// src/pages/hcmutLibrary/LibraryPage.tsx
 
-// =================================================================
-// 1. IMPORTS
-// =================================================================
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faChevronLeft,
-  faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
 
+// Import Layout
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
 
-import { allDocuments } from '@/mocks/library.mock'; 
+// Import Components con
+import LibraryTable from './component/LibraryTable';
+import ShareDocumentBox from './component/ShareDocumentBox';
 
-export type Document = {
-  id: number;
-  Author: string;
-  DocumentTitle: string;
-};
+import { useLibrary } from '@/hooks/useLibrary'; 
 
-
-// =================================================================
-// 3. COMPONENT CHÍNH: LibraryPage
-// =================================================================
 const LibraryPage = () => {
 
-  // --- State ---
   const [currentPage, setCurrentPage] = useState(1);
   const [fileName, setFileName] = useState('');
 
-  // --- Logic xử lý sự kiện ---
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const itemsPerPage = 6;
+
+  // 🔥 3. GỌI HOOK: 
+  // - useApi = false: Dùng Mock Data thông qua Hook
+  // - useApi = true:  Dùng API thật
+  const { 
+    documents,      
+    totalPages,     
+    isLoading,      
+    uploadDoc,      
+    isUploading     
+  } = useLibrary(currentPage, itemsPerPage, false); 
+
+  // --- Logic xử lý sự kiện chọn file ---
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFileName(e.target.files[0].name);
+      setSelectedFile(e.target.files[0]);
     } else {
       setFileName('');
+      setSelectedFile(null);
     }
+  };
+
+  const handleUpload = () => {
+    if (!selectedFile) {
+      alert("Please select a file first!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    uploadDoc(formData);
+    setFileName('');
+    setSelectedFile(null);
   };
   
   const handlePageChange = (page: number) => {
@@ -46,44 +62,56 @@ const LibraryPage = () => {
     setCurrentPage(page);
   };
 
-  // --- Logic Phân trang ---
-  const itemsPerPage = 6;
-  const totalPages = Math.ceil(allDocuments.length / itemsPerPage);
-  const currentDocuments = allDocuments.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
 
-        {/* Nội dung chính */}
         <main className="flex-1 ml-0 xl:ml-[282px] pt-24 p-8 flex flex-col">
           
           <div className="flex justify-between items-center p-6 w-3/4">
             <h1 className="text-3xl font-bold text-[#B3261E]">Library</h1>
           </div>
           
-          {/* Box 1: Library */}
-          <LibraryTable
-            documents={currentDocuments}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+          {/* Box 1: Danh sách tài liệu */}
+          {/* Hiển thị Loading nếu đang tải */}
+          {isLoading ? (
+            <div className="p-6">Loading documents...</div>
+          ) : (
+            <LibraryTable
+              documents={documents}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
 
-          {/* Div đệm */}
           <div className="flex-grow"></div>
 
-          {/* Box 2: Share Document */}
-          <ProgressReportBox
-            fileName={fileName}
-            onFileChange={handleFileChange}
-            className="mt-8" // Giữ khoảng cách
-          />
+          {/* Box 2: Chia sẻ tài liệu (Upload) */}
+          <div className="mt-8 w-4/5">
+            <ShareDocumentBox
+              fileName={fileName}
+              onFileChange={handleFileChange}
+              className="w-full" 
+            />
+            
+            {/* Nút xác nhận Upload */}
+            {selectedFile && (
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={handleUpload}
+                  disabled={isUploading}
+                  className={`px-6 py-2 rounded-lg font-semibold text-white transition-colors ${
+                    isUploading ? 'bg-gray-400' : 'bg-[#B3261E] hover:bg-red-700'
+                  }`}
+                >
+                  {isUploading ? 'Uploading...' : 'Confirm Upload'}
+                </button>
+              </div>
+            )}
+          </div>
 
         </main>
       </div>
@@ -93,130 +121,3 @@ const LibraryPage = () => {
 }; 
 
 export default LibraryPage;
-
-// =================================================================
-// 4. CÁC COMPONENT CON
-// =================================================================
-
-// --- Component con 1: LibraryTable (Bảng và Phân trang) ---
-type LibraryTableProps = {
-  documents: Document[];
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-};
-
-const LibraryTable = ({ documents, currentPage, totalPages, onPageChange }: LibraryTableProps) => {
-  return (
-    <section className="bg-white shadow-md rounded-lg overflow-hidden w-4/5">
-
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[700px] text-left text-sm">
-          <thead className="bg-gray-200 text-gray-500 uppercase">
-            <tr>
-              <th className="px-6 py-3">Author</th>
-              <th className="px-6 py-3">Document Title</th>
-              <th className="px-6 py-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-            {documents.map((doc) => (
-              <tr key={doc.id} className="border-b border-gray-200 hover:bg-gray-100">
-                <td className="px-6 py-4">{doc.Author}</td>
-                <td className="px-6 py-4 font-medium">{doc.DocumentTitle}</td>
-                <td className="px-6 py-4 flex gap-2 justify-center">
-                  <button className="text-red-600 border border-red-500 rounded-full px-3 py-1 text-xs font-medium hover:bg-red-100">
-                    Read
-                  </button>
-                  <button className="text-red-600 border border-red-500 rounded-full px-3 py-1 text-xs font-medium hover:bg-red-100">
-                    Download
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Phân trang (Pagination) */}
-      <div className="flex justify-between items-center p-4 text-sm text-gray-600 bg-gray-100 border-t">
-        <span>Page {currentPage} of {totalPages}</span>
-        <div className="flex items-center gap-1">
-          <button 
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-2 py-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
-          >
-            <FontAwesomeIcon icon={faChevronLeft} size="xs" />
-          </button>
-          
-          {[...Array(totalPages)].map((_, i) => (
-            <button 
-              key={i} 
-              onClick={() => onPageChange(i + 1)}
-              className={`px-3 py-1 rounded-md ${
-                currentPage === i + 1 
-                  ? 'bg-red-600 text-white font-bold' 
-                  : 'hover:bg-gray-100'
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button 
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-2 py-1 rounded-md hover:bg-gray-100 disabled:opacity-50"
-          >
-            <FontAwesomeIcon icon={faChevronRight} size="xs" />
-          </button>
-        </div>
-      </div>
-    </section> 
-  );
-};
-
-
-// --- Component con 2: ProgressReportBox (Upload) ---
-type ProgressReportProps = {
-  fileName: string;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string; 
-};
-
-const ProgressReportBox = ({ fileName, onFileChange, className = '' }: ProgressReportProps) => {
-  return (
-    <section className={`bg-white rounded-lg shadow-md p-6 w-4/5 ${className}`}>
-      <h2 className="text-xl font-bold text-[#B3261E] mb-1 ">Share Document</h2>
-      <div className="h-0.5 w-3/4 bg-gradient-to-r from-[#B3261E] to-transparent mb-4"></div>
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
-            Upload Document
-          </label>
-          <p className="text-xs text-gray-500 mt-1">Supported formats: PDF, Docx. Max file size: 10MB</p>
-        </div>
-        
-        <div>
-          <input 
-            type="file" 
-            id="report-upload" 
-            className="hidden"
-            onChange={onFileChange}
-          />
-          <label 
-            htmlFor="report-upload"
-            className="cursor-pointer text-sm text-[#B3261E] font-semibold bg-red-100 hover:bg-red-200 px-4 py-2 rounded-lg transition-colors"
-          >
-            Update
-          </label>
-          <span className="ml-4 text-sm text-gray-500">
-            {fileName ? fileName : "Không có tệp được chọn"}
-          </span>
-        </div>
-      </div>
-    </section>
-  );
-};

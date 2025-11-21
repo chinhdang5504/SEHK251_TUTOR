@@ -1,4 +1,4 @@
-import type { Student } from '@/pages/Tutor/sessiondetail';
+import type { Student } from '@/pages/Tutor/SessionDetailsPage/sessiondetail.types';
 
 export const sessionDetails = {
   day: '30',
