@@ -51,7 +51,9 @@ const TutorCalendar = ({ onSelectDate }: { onSelectDate?: (date: string) => void
 
   const isToday = (date: Date) => {
     const now = new Date()
-    return date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+    return (
+      date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+    )
   }
 
   const goPrevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))

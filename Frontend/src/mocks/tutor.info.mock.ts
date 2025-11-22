@@ -1,39 +1,107 @@
-import type { Tutor, ClassItem } from '@/types/tutor'
+import type { Tutor } from '@/types/tutor'
+import type { Session } from '@/types/session'
 
-export const mockTutors: Tutor[] = [
+export const mockTutor: Tutor = {
+  id: 'T1001',
+  fullName: 'Nguyen Van A',
+  email: 'tutor@example.com',
+  avatar: 'https://i.pravatar.cc/150?img=10',
+  faculty: 'Computer Science',
+  bio: 'Đam mê lập trình và giảng dạy, giúp sinh viên nắm vững tư duy thuật toán.',
+  subject: 'Computer Science',
+  teachingSubjects: ['Programming', 'Algorithms', 'Data Structures'],
+  rating: 4.9
+}
+
+export const mockClasses: Session[] = [
   {
     id: '1',
-    avatar: 'https://i.pravatar.cc/100?img=10',
-    fullName: 'Lê Đức Thuận',
-    faculty: 'Computer Science and Engineering',
-    email: 'ldt@hcmut.edu.vn',
-    phone: '0901234567',
-    availableClasses: 6,
+    title: 'Advanced Programming',
+    description: 'Learn advanced concepts in programming',
+    tutorId: 't1',
+    tutorName: 'Duong Huy Tuong',
+    date: '2025-11-30',
+    startTime: '07:00',
+    endTime: '08:30',
+    room: 'H-101',
+    currentEnrollment: 0,
+    maxCapacity: 10,
+    status: 'Scheduled',
+    enrolled: false
   },
   {
     id: '2',
-    avatar: 'https://i.pravatar.cc/100?img=2',
-    fullName: 'Dương Huy Tường',
-    faculty: 'Artificial Intelligence',
-    email: 'dht@hcmut.edu.vn',
-    phone: '0912345678',
-    availableClasses: 4,
+    title: 'Data Structures',
+    description: 'Master common data structures',
+    tutorId: 't2',
+    tutorName: 'Lam Duan',
+    date: '2025-11-30',
+    startTime: '08:30',
+    endTime: '10:00',
+    room: 'H-102',
+    currentEnrollment: 10,
+    maxCapacity: 10,
+    status: 'Scheduled',
+    enrolled: false
   },
+  {
+    id: '3',
+    title: 'Algorithms',
+    description: 'Design and analyze algorithms',
+    tutorId: 't3',
+    tutorName: 'Phung Huu',
+    date: '2025-11-30',
+    startTime: '09:10',
+    endTime: '10:40',
+    room: 'H-103',
+    currentEnrollment: 5,
+    maxCapacity: 10,
+    status: 'Scheduled',
+    enrolled: false
+  },
+  {
+    id: '4',
+    title: 'Database Systems',
+    description: 'Learn relational databases',
+    tutorId: 't4',
+    tutorName: 'Vo Van Tien',
+    date: '2025-11-30',
+    startTime: '10:30',
+    endTime: '12:00',
+    room: 'H-104',
+    currentEnrollment: 10,
+    maxCapacity: 10,
+    status: 'Scheduled',
+    enrolled: false
+  },
+  {
+    id: '5',
+    title: 'Software Engineering',
+    description: 'Principles of software design',
+    tutorId: 't5',
+    tutorName: 'Do Minh Trung',
+    date: '2025-11-30',
+    startTime: '11:50',
+    endTime: '13:20',
+    room: 'H-105',
+    currentEnrollment: 2,
+    maxCapacity: 10,
+    status: 'Completed',
+    enrolled: false
+  },
+  {
+    id: '6',
+    title: 'Operating Systems',
+    description: 'Understand OS concepts',
+    tutorId: 't6',
+    tutorName: 'Lai Minh Sam',
+    date: '2025-11-30',
+    startTime: '13:00',
+    endTime: '14:30',
+    room: 'H-106',
+    currentEnrollment: 10,
+    maxCapacity: 10,
+    status: 'Canceled',
+    enrolled: false
+  }
 ]
-
-export const mockClasses: ClassItem[] = [
-  { id: '1', date: '2025-11-30', time: '07:00', subject: 'Advanced Programming', room: 'H-101', status: 'Enroll' },
-  { id: '2', date: '2025-11-30', time: '08:30', subject: 'Data Structures', room: 'H-102', status: 'Full' },
-  { id: '3', date: '2025-11-30', time: '09:10', subject: 'Algorithms', room: 'H-103', status: 'Enroll' },
-  { id: '4', date: '2025-11-30', time: '10:30', subject: 'Database Systems', room: 'H-104', status: 'Full' },
-  { id: '5', date: '2025-11-30', time: '11:50', subject: 'Software Engineering', room: 'H-105', status: 'Enroll' },
-  { id: '6', date: '2025-11-30', time: '13:00', subject: 'Operating Systems', room: 'H-106', status: 'Full' },
-]
-
-export const mockAvailability: Record<
-  string,
-  { available: boolean; hours: string }
-> = {
-  '2025-11-10': { available: true, hours: '09:00 - 17:00' },
-  '2025-11-11': { available: false, hours: '' },
-}

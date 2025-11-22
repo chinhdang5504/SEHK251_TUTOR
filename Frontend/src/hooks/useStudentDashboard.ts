@@ -1,94 +1,74 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import studentApi from '@/api/dashboardStudentApi';
+import { useQuery } from '@tanstack/react-query'
+import { getRegisteredSessions } from '@/api/studentAPI'
+import dayjs from 'dayjs'
+import type { WeekDay } from '@/types/calender'
+import { mockRegisteredSessions } from '@/mocks/dashboardStudent.mock'
 
-import { mockAllRegisteredSessions, mockAllWeeksData } from '@/mocks/dashboardStudent.mock'; 
-import type { RegisteredSession, WeekDay } from '@/pages/Student/Dashboard/dashboard.types';
+const generateCalendarWeeks = (): WeekDay[][] => {
+  const today = dayjs()
+  const start = today.subtract(1, 'week')
+  const totalWeeks = 6
+
+  const weeks: WeekDay[][] = []
+
+  for (let w = 0; w < totalWeeks; w++) {
+    const week: WeekDay[] = []
+
+    for (let i = 0; i < 7; i++) {
+      const d = start.add(w, 'week').add(i, 'day')
+      week.push({
+        day: d.format('ddd'),
+        date: d.date(),
+        fullDate: d.format('YYYY-MM-DD')
+      })
+    }
+
+    weeks.push(week)
+  }
+
+  return weeks
+}
 
 export const useStudentDashboard = (
-  page: number, 
-  limit: number, 
+  page: number,
+  limit: number,
   currentCalendarPage: number,
-  selectedDate: string | null,
-  useApi = false
+  selectedDate: string | null
 ) => {
-  const queryClient = useQueryClient();
+  const weeks = generateCalendarWeeks()
+  const startFullDate = weeks[0][0].fullDate
+  const endFullDate = weeks[weeks.length - 1][6].fullDate
 
-  const {
-    data: sessionData,
-    isLoading: isSessionLoading,
-  } = useQuery({
-    queryKey: ['student-sessions', page, limit, selectedDate],
+  const { data: allSessions = [], isLoading } = useQuery({
+    queryKey: ['student-sessions-range', startFullDate, endFullDate],
     queryFn: async () => {
-      if (!useApi) {
-        await new Promise((r) => setTimeout(r, 500));
-
-        let filtered = selectedDate
-          ? mockAllRegisteredSessions.filter((s) => s.date === selectedDate)
-          : mockAllRegisteredSessions;
-
-        const start = (page - 1) * limit;
-        const end = page * limit;
-        const paginated = filtered.slice(start, end);
-        const totalPages = Math.ceil(filtered.length / limit);
-        const allForCount = mockAllRegisteredSessions; 
-
-        return { 
-          data: paginated, 
-          totalPages,
-          allSessions: allForCount 
-        };
+      try {
+        return await getRegisteredSessions({
+          page: 1,
+          limit: 9999,
+          startDate: startFullDate,
+          endDate: endFullDate
+        })
+      } catch (e) {
+        console.warn('⚠️ BE error → using mockRegisteredSessions')
+        return mockRegisteredSessions
       }
-
-      const res = await studentApi.getRegisteredSessions({ 
-        page, 
-        limit, 
-        date: selectedDate || undefined 
-      });
-      return res; 
-    },
-    placeholderData: (prev) => prev,
-  });
-
-  const {
-    data: calendarData,
-    isLoading: isCalendarLoading
-  } = useQuery({
-    queryKey: ['student-calendar', currentCalendarPage],
-    queryFn: async () => {
-      if (!useApi) {
-        return mockAllWeeksData[currentCalendarPage] || [];
-      }
-
-      return [];
     }
-  });
-  
-  const { mutate: cancelSession, isPending: isCancelling } = useMutation({
-    mutationFn: async (id: number) => {
-      if (!useApi) {
-        console.log(`Mock cancel session ${id}`);
-        return;
-      }
-      return await studentApi.cancelSession(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student-sessions'] });
-      alert("Đã hủy buổi học thành công!");
-    }
-  });
+  })
+
+  /** FE Filtering **/
+  const filtered = selectedDate ? allSessions.filter((s) => s.date === selectedDate) : allSessions
+
+  const totalPages = Math.ceil(filtered.length / limit)
+  const start = (page - 1) * limit
+  const paginated = filtered.slice(start, start + limit)
 
   return {
-    sessions: sessionData?.data || [],
-    totalPages: sessionData?.totalPages || 0,
-    allSessionsForCalendar: sessionData?.allSessions || [],
-    
-    weekDays: calendarData || [],
-    totalWeeks: mockAllWeeksData.length,
-
-    isLoading: isSessionLoading || isCalendarLoading,
-    isCancelling,
-
-    cancelSession,
-  };
-};
+    sessions: paginated,
+    totalPages,
+    allSessionsForCalendar: allSessions,
+    weekDays: weeks[currentCalendarPage],
+    totalWeeks: weeks.length,
+    isLoading
+  }
+}
