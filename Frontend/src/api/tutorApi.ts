@@ -1,39 +1,33 @@
 import PrivateAxios from '@/lib/privateAxios'
+import type { ApiListResponse } from '@/types/responseAPI'
+import type { Session } from '@/types/session'
 
-const tutorApi = {
-  /* <--- Search tutors by query keyword ---> */
-  async searchTutor(query: string) {
-    const res = await PrivateAxios.get('/tutors/search', {
-      params: { q: query }, 
-    })
-    return res.data 
-  },
-
-  /* <--- Get tutor information by ID ---> */
-  async getTutorById(id: string) {
-    const res = await PrivateAxios.get(`/tutors/${id}`)
-    return res.data
-  },
-
-  /* <--- Get all classes of a tutor ---> */
-  async getClassesByTutor(id: string) {
-    const res = await PrivateAxios.get(`/tutors/${id}/classes`)
-    return res.data
-  },
-
-  /* <--- Enroll a class ---> */
-  async enrollClass(id: string) {
-    const res = await PrivateAxios.post(`/classes/${id}/enroll`)
-    return res.data
-  },
-
-  /* <--- Get tutor availability by date/time ---> */
-  async getTutorAvailability(id: string, date: string) {
-    const res = await PrivateAxios.get(`/tutors/${id}/availability`, {
-      params: { date},
-    })
-    return res.data
-  },
+interface GetSessionsParams {
+  page: number
+  limit: number
+  status?: string
 }
 
-export default tutorApi
+export const getMySessions = async (params: GetSessionsParams) => {
+  const res = await PrivateAxios.get<ApiListResponse<Session>>('/tutor/sessions', { params })
+  return res.data.data
+}
+
+export const getRegisteredStudents = async (sessionId: string, page = 1, limit = 6) => {
+  const res = await PrivateAxios.get(`/tutor/sessions/${sessionId}/students`, {
+    params: { page, limit }
+  })
+  return res.data
+}
+
+export const uploadSessionMinutes = async (sessionId: number, file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await PrivateAxios.post(`/tutor/sessions/${sessionId}/minutes`, formData)
+  return res.data
+}
+
+export const getSessionDetail = async (sessionId: string) => {
+  const res = await PrivateAxios.get(`/tutor/sessions/${sessionId}`)
+  return res.data
+}

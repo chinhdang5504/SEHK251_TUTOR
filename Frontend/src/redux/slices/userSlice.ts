@@ -2,10 +2,11 @@ import type { User } from '@/types/user'
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 const initialState: User = {
+  fullName: '',
   username: '',
   token: '',
   refreshToken: '',
-  role: 'guest',
+  role: '',
   isAuthenticated: false
 }
 
@@ -24,7 +25,7 @@ const UserSlice = createSlice({
       state.username = ''
       state.token = ''
       state.refreshToken = ''
-      state.role = 'guest'
+      state.role = ''
       state.isAuthenticated = false
     }
   }

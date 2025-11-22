@@ -1,33 +1,24 @@
 import PrivateAxios from '@/lib/privateAxios'
 
-interface GetDocsParams {
-  page: number;
-  limit: number;
+export const getDocuments = async ({ page, limit }: { page: number; limit: number }) => {
+  const res = await PrivateAxios.get('/library/documents', {
+    params: { page, limit }
+  })
+  return res.data
 }
 
-const libraryApi = {
-  /* <--- 1. Lấy danh sách tài liệu (Có phân trang) ---> */
-  async getDocuments(params: GetDocsParams) {
-    const { page, limit } = params;
-    const res = await PrivateAxios.get('/library/documents', {
-      params: { page, limit } 
-    })
-    return res.data 
-  },
-
-  /* <--- 2. Upload tài liệu mới ---> */
-  async uploadDocument(data: FormData) {
-    const res = await PrivateAxios.post('/library/documents', data)
-    return res.data
-  },
-
-  /* <--- 3. Download tài liệu ---> */
-  async downloadDocument(id: number) {
-    const res = await PrivateAxios.get(`/library/documents/${id}/download`, {
-      responseType: 'blob' // Quan trọng: Để nhận file nhị phân
-    })
-    return res.data
-  }
+export const uploadDocument = async (formData: FormData) => {
+  const res = await PrivateAxios.post('/library/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return res.data
 }
 
-export default libraryApi
+export const downloadDocument = async (id: number) => {
+  const res = await PrivateAxios.get(`/library/download/${id}`, {
+    responseType: 'blob'
+  })
+  return res.data
+}

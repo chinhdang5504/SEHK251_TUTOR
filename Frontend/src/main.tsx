@@ -9,7 +9,6 @@ import queryClient from '@/lib/queryClient.ts'
 import { store, persistor } from '@/redux/store.ts'
 import { PersistGate } from 'redux-persist/integration/react'
 import { Toaster } from 'sonner'
-import './styles/globals.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
