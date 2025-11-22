@@ -27,6 +27,9 @@ const Sidebar = () => {
     role === 'tutor'
       ? [
           { path: '/student/dashboard', content: 'Dashboard', icon: faHouse },
+    role === 'student'
+      ? [
+          { path: '/student', content: 'Dashboard', icon: faHouse },
           { path: '/student/tutors', content: 'Tutor', icon: faBook },
           { path: '/student/public-session', content: 'Public sessions', icon: faStar },
           { path: '/student/library', content: 'HCMUT-LIBRARY', icon: faCalendar }

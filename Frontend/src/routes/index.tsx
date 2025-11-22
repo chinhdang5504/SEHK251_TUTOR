@@ -9,7 +9,6 @@ import TutorRoute from '@/config/TutorRoute'
 import HomePage from '@/pages/HomePage/HomePage'
 
 import TestPage from '@/pages/TestPage/TestPage'
-
 import StudentDashboard from '@/pages/Student/Dashboard/dashboard'
 import PublicSession from '@/pages/Student/publicsession'
 import TutorList from '@/pages/Student/tutor'
@@ -20,7 +19,6 @@ import TutorDashboard from '@/pages/Tutor/Dashboard/dashboard'
 import TutorInfo from '@/pages/Student/TutorInfo'
 import LibraryPage from '@/pages/hcmutLibrary/library'
 import SessionDetailsPage from '@/pages/Tutor/sessiondetail'
-
 // ================= ROUTER =================
 const router = createBrowserRouter([
   // 🌐 Public pages
@@ -60,3 +58,4 @@ const router = createBrowserRouter([
 ])
 
 export default router
+

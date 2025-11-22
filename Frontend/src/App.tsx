@@ -1,7 +1,12 @@
 import PublicRoute from '@/config/PublicRoutes'
 import StudentRoute from '@/config/StudentRoute'
 import HomePage from '@/pages/HomePage/HomePage'
+import TestPage from '@/pages/TestPage/TestPage'
 import { Route, Routes } from 'react-router-dom'
+import SearchTutor from '@/pages/Student/tutor'
+import TutorInfo from '@/pages/Student/TutorInfo'
+import Profile from '@/pages/Student/profile'
+import PublicSessions from '@/pages/Student/publicsession'
 
 // Import các trang
 import Profile from './pages/Student/profile'
