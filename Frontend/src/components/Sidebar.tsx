@@ -24,6 +24,9 @@ const Sidebar = () => {
 
   /* <--- Sidebar items differ based on user role ---> */
   const sidebarItem =
+    role === 'tutor'
+      ? [
+          { path: '/student/dashboard', content: 'Dashboard', icon: faHouse },
     role === 'student'
       ? [
           { path: '/student', content: 'Dashboard', icon: faHouse },
@@ -32,6 +35,7 @@ const Sidebar = () => {
           { path: '/student/library', content: 'HCMUT-LIBRARY', icon: faCalendar }
         ]
       : [
+          // Đã chọn code mới để khớp với App.tsx và routes/index.tsx
           { path: '/tutor', content: 'Dashboard', icon: faHouse },
           { path: '/tutor/session-detail', content: 'Session Detail', icon: faBook },
           { path: '/tutor/library', content: 'Library', icon: faCalendar }
