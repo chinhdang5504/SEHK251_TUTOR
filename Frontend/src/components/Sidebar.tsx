@@ -43,7 +43,6 @@ const Sidebar = () => {
     ],
     tutor: [
       { path: '/tutor', content: 'Dashboard', icon: Home },
-      { path: '/tutor/session-detail', content: 'Session Detail', icon: Book },
       { path: '/library', content: 'Library', icon: Calendar },
     ],
   }
