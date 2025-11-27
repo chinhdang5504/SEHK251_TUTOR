@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import com.example.tutor_demo.service.MinutesService;
 import com.example.tutor_demo.service.SessionManagementService;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -78,7 +77,7 @@ public class TutorProfileController {
     }
 
     @GetMapping("api/tutor/profile")
-    public ResponseEntity getCurrrentTutorProfile(HttpServletRequest request){
+    public ResponseEntity<Object> getCurrrentTutorProfile(HttpServletRequest request){
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             ErrorResponse<Object> errResponse = new ErrorResponse<>(401, "Validation error", "string", "string", null);

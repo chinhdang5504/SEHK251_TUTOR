@@ -1,6 +1,8 @@
 package com.example.tutor_demo.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Page;
@@ -33,5 +35,32 @@ public class SessionController {
         );
 
         return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", data));
+    }
+    
+     @GetMapping("/session/search")
+    public ResponseEntity<APIResponse<PaginatedData<SessionDataDto>>> searchSessions(
+            @RequestParam(name = "q") String keyword,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer limit) {
+
+        Page<SessionDataDto> dtoPage = sessionManagementService.searchSessions(keyword, page, limit);
+
+        PaginatedData<SessionDataDto> data = new PaginatedData<>(
+                dtoPage.getContent(),
+               (int)dtoPage.getTotalElements(),
+                dtoPage.getNumber() + 1,
+                dtoPage.getTotalPages(),
+                dtoPage.getSize()
+        );
+
+        APIResponse<PaginatedData<SessionDataDto>> response =
+                new APIResponse<>(true, 200, "Success", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/sessions/{sessionId}/enroll")
+    public ResponseEntity<APIResponse<Object>> enrollSession(@PathVariable String sessionId){
+        return ResponseEntity.status(400).body(new APIResponse<>(false, 400, "Error Occured", null));
     }
 }

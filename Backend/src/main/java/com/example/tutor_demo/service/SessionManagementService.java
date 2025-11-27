@@ -70,7 +70,7 @@ public class SessionManagementService {
         return new PaginatedData<RegisteredStudentDto>(dtoList,(int)rsPage.getTotalElements(), page, rsPage.getTotalPages(), limit);
     }
 
-   public Page<StudentSessionDto> getRegisteredSessionByStudent(
+    public Page<StudentSessionDto> getRegisteredSessionByStudent(
         String studentId, int page, int limit, String date, String startDate, String endDate) {
 
         Pageable pageable = PageRequest.of(page - 1, limit);
@@ -113,5 +113,13 @@ public class SessionManagementService {
         return sessions.map(rs -> {
             return mapToDto(rs);
         });
+    }
+
+    public Page<SessionDataDto> searchSessions(String keyword, int page, int limit) {
+        Pageable pageable = PageRequest.of(page - 1, limit);
+
+        Page<Session> result = sessionRepo.searchSessions(keyword, pageable);
+
+        return result.map(s -> mapToDto(s));
     }
 }
