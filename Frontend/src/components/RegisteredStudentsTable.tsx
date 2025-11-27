@@ -1,6 +1,12 @@
+// src/components/RegisteredStudentsTable.tsx
 import { NavLink } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react' // <-- dùng lucide
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import StudentStatusBadge from '@/components/StudentStatusBadge'
+
+import { useFeedbackModal, type Student } from '@/hooks/useFeedbackModal'
+
+import FeedbackModal from './FeedbackModal'
+import FeedbackForm from './Feedbackform'
 
 interface StudentsTableProps {
   students: Student[]
@@ -10,6 +16,9 @@ interface StudentsTableProps {
 }
 
 const RegisteredStudentsTable = ({ students, currentPage, totalPages, onPageChange }: StudentsTableProps) => {
+  const { isOpen, selectedStudent, studentAsSession, openFeedbackModal, closeFeedbackModal, handleFeedbackSubmit } =
+    useFeedbackModal()
+
   return (
     <section className='bg-white rounded-lg shadow-md overflow-hidden'>
       {/* Bảng dữ liệu */}
@@ -33,13 +42,16 @@ const RegisteredStudentsTable = ({ students, currentPage, totalPages, onPageChan
                 </td>
                 <td className='px-6 py-4 flex gap-3 justify-center'>
                   <NavLink
-                    to={`/student/profile`}
+                    to={`/student/profile/${student.id}`}
                     className='text-blue-600 border border-blue-500 rounded-full px-3 py-1 text-xs font-medium hover:bg-blue-50'
                   >
                     View Profile
                   </NavLink>
 
-                  <button className='text-blue-600 border border-blue-500 rounded-full px-3 py-1 text-xs font-medium hover:bg-blue-50'>
+                  <button
+                    onClick={() => openFeedbackModal(student)}
+                    className='text-blue-600 border border-blue-500 rounded-full px-3 py-1 text-xs font-medium hover:bg-blue-50'
+                  >
                     Feedback
                   </button>
                 </td>
@@ -60,28 +72,31 @@ const RegisteredStudentsTable = ({ students, currentPage, totalPages, onPageChan
             disabled={currentPage === 1}
             className='px-2 py-1 rounded-md hover:bg-gray-200 disabled:opacity-50'
           >
-            <ChevronLeft size={16} /> {/* <-- icon lucide */}
+            <ChevronLeft size={16} />
           </button>
 
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => onPageChange(i + 1)}
-              className={`px-3 py-1 rounded-md ${currentPage === i + 1 ? 'bg-red-600 text-white font-bold' : 'hover:bg-gray-200'}`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          <button className='px-3 py-1 rounded-md bg-red-600 text-white font-bold'>{currentPage}</button>
 
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className='px-2 py-1 rounded-md hover:bg-gray-200 disabled:opacity-50'
           >
-            <ChevronRight size={16} /> {/* <-- icon lucide */}
+            <ChevronRight size={16} />
           </button>
         </div>
       </div>
+
+      {isOpen && selectedStudent && (
+        <FeedbackModal isOpen={isOpen} onClose={closeFeedbackModal}>
+          <FeedbackForm
+            sessions={studentAsSession}
+            defaultSessionId={selectedStudent.id}
+            onFeedbackSubmit={handleFeedbackSubmit}
+            onClose={closeFeedbackModal}
+          />
+        </FeedbackModal>
+      )}
     </section>
   )
 }
