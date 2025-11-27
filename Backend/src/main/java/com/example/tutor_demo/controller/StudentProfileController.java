@@ -2,6 +2,7 @@ package com.example.tutor_demo.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import com.example.tutor_demo.entity.*;
 import com.example.tutor_demo.dto.*;
@@ -20,6 +21,8 @@ public class StudentProfileController {
 
     private final StudentProfileService studentProfileService;
     private final SessionManagementService sessionManagementService;
+    
+    @Autowired
     public StudentProfileController(StudentProfileService studentProfileService, SessionManagementService sessionManagementService) {
         this.studentProfileService = studentProfileService;
         this.sessionManagementService =sessionManagementService;

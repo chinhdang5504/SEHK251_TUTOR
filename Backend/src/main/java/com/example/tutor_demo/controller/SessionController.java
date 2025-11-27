@@ -5,17 +5,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import com.example.tutor_demo.service.*;
-
-import lombok.RequiredArgsConstructor;
 
 import com.example.tutor_demo.dto.*;
 
 @RestController
-@RequiredArgsConstructor
+
 public class SessionController {
    private final SessionManagementService sessionManagementService;
+
+   @Autowired
+   public SessionController(SessionManagementService service){
+        this.sessionManagementService = service;
+   }
    @GetMapping("/sessions/public")
     public ResponseEntity<APIResponse<PaginatedData<SessionDataDto>>> getPublicSessions(
             @RequestParam(defaultValue = "1") Integer page,

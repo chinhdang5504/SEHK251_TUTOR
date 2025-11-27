@@ -19,13 +19,13 @@ import com.example.tutor_demo.dto.ErrorResponse;
 import com.example.tutor_demo.dto.PaginatedData;
 import com.example.tutor_demo.service.LibraryService;
 
-
-import lombok.RequiredArgsConstructor;
-
 @RestController
-@RequiredArgsConstructor
 public class LibraryController {
     private final LibraryService libraryService;
+
+    public LibraryController(LibraryService service){
+        this.libraryService = service;
+    }
 
     @GetMapping("/library/documents")
    public ResponseEntity<APIResponse<PaginatedData<?>>> getDocuments(

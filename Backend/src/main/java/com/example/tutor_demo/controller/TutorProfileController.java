@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import com.example.tutor_demo.dto.*;
@@ -29,6 +30,8 @@ public class TutorProfileController {
     private final TutorProfileService tutorProfileService;
     private final SessionManagementService sessionManagementService;
     private final MinutesService minutesService;
+
+    @Autowired
     public TutorProfileController(TutorProfileService tutorProfileService, SessionManagementService sessionManagementService, MinutesService minutesService) {
         this.tutorProfileService = tutorProfileService;
         this.sessionManagementService = sessionManagementService;
