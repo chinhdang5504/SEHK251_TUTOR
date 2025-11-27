@@ -1,32 +1,21 @@
-package com.example.tutor_demo.entity;
+package com.example.tutor_demo.dto;
 
-import jakarta.persistence.*;
-
-
-@Entity
-@Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserInfoDto {
     private String id;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(name = "full_name", nullable = false)
     private String fullName;
-
-    @Column(name = "role", nullable = false)
     private String role;
-
-    @Column(name = "avatar")
     private String avatar;
 
-    // Getters and Setters
+    // constructors, getters & setters
+    public UserInfoDto() {}
+    public UserInfoDto(String id, String email, String fullName, String role, String avatar) {
+        this.id = id;
+        this.email = email;
+        this.fullName = fullName;
+        this.role = role;
+        this.avatar = avatar;
+    }
     public String getId() {
         return id;
     }
@@ -36,14 +25,9 @@ public class User {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
     }
     public String getFullName() {
         return fullName;

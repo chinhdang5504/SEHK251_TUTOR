@@ -1,4 +1,6 @@
 package com.example.tutor_demo.repository;
 
-public class UserRepository {
+import com.example.tutor_demo.entity.User;
+public interface UserRepository {
+    public User findById(String id);
 }
