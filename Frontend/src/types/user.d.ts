@@ -1,7 +1,8 @@
 export interface User {
+  fullName: ''
   username: ''
   token: ''
   refreshToken: ''
-  role: 'admin' | 'student' | 'instructor' | 'guest'
+  role: 'admin' | 'student' | 'tutor' | ''
   isAuthenticated: boolean
 }
