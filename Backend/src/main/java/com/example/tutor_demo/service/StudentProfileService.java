@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.tutor_demo.dto.StudentProfileDto;
-import com.example.tutor_demo.entity.StudentProfile;
+import com.example.tutor_demo.entity.Student;
 import com.example.tutor_demo.repository.StudentProfileRepo;
 
 
@@ -22,7 +22,7 @@ public class StudentProfileService {
     public StudentProfileDto getStudentProfile(String studentId) {
 
         // Lấy phần data from DB (improvementSubjects + faculty)
-        StudentProfile profile = profileRepo.findById(studentId).orElse(null);
+        Student profile = profileRepo.findById(studentId).orElse(null);
         if (profile == null) return null;
 
         // Lấy thông tin cá nhân từ SSO trong token
@@ -54,8 +54,8 @@ public class StudentProfileService {
     }
 
     @Transactional
-    public StudentProfile updateImprovementSubjects(String studentId, List<String> subjects) {
-        StudentProfile profile = profileRepo.findById(studentId)
+    public Student updateImprovementSubjects(String studentId, List<String> subjects) {
+        Student profile = profileRepo.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student profile not found"));
 
         profile.setImprovementSubjects(subjects);
@@ -63,7 +63,7 @@ public class StudentProfileService {
         return profileRepo.save(profile);
     }
 
-    public StudentProfileDto toDto(StudentProfile profile) {
+    public StudentProfileDto toDto(Student profile) {
         StudentProfileDto dto = new StudentProfileDto();
         dto.setId(profile.getId());
         dto.setFullName(profile.getFullName());

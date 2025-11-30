@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.tutor_demo.dto.TutorProfileDto;
 import com.example.tutor_demo.repository.TutorProfileRepo;
-import com.example.tutor_demo.entity.TutorProfile;
+import com.example.tutor_demo.entity.Tutor;
+
 @Service
 public class TutorProfileService {
     private final TutorProfileRepo tutorProfileRepo;
@@ -15,7 +16,7 @@ public class TutorProfileService {
 
     public TutorProfileDto getTutorProfile(String tutorId) {
         // Logic to get tutor profile by tutorId
-        TutorProfile profile = tutorProfileRepo.findById(tutorId).orElse(null);
+        Tutor profile = tutorProfileRepo.findById(tutorId).orElse(null);
         if (profile == null) throw new RuntimeException("Tutor profile not found");
 
         TutorProfileDto dto = new TutorProfileDto();

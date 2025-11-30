@@ -6,47 +6,27 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
-import java.text.ParseException;
-import java.util.Optional;
+import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.text.ParseException;
+
+@Component
 public class JwtUtils {
 
-    private static final String SECRET = "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij";
+    @Value("${jwt.secret}")
+    private String secret;
 
-    /**
-     * Verify chữ ký & lấy claims
-     */
-    private static JWTClaimsSet getClaims(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(SECRET);
-
-            if (!signedJWT.verify(verifier)) {
-                throw new RuntimeException("Invalid JWT signature");
-            }
-
-            return signedJWT.getJWTClaimsSet();
-
-        } catch (ParseException | JOSEException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+    public String getUsername(String token) throws ParseException, JOSEException {
+        SignedJWT parsedJWT = SignedJWT.parse(token);
+        JWSVerifier verifier = new MACVerifier(secret.getBytes());
+        boolean isValid = parsedJWT.verify(verifier);
+        if (!isValid) {
+            throw new JOSEException("Invalid token signature");
         }
-    }
-
-    /**
-     * Lấy userId — nếu hệ thống lưu userId trong "sub"
-     */
-    public static String extractUserId(String token) {
-        return Optional.ofNullable(getClaims(token).getSubject())
-                .orElseThrow(() -> new RuntimeException("User ID (sub) not found"));
-    }
-
-    public static String extractRole(String token)throws ParseException {
-        return Optional.ofNullable(getClaims(token).getStringClaim("role"))
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-    }
-
-    public static String extractUsername(String token) throws ParseException {
-        return Optional.ofNullable(getClaims(token).getStringClaim("username"))
-                .orElseThrow(() -> new RuntimeException("Username not found"));
+        JWTClaimsSet parsedClaims = parsedJWT.getJWTClaimsSet();
+        return parsedClaims.getStringClaim("username");
     }
 }

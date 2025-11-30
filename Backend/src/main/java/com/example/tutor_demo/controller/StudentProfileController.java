@@ -19,6 +19,9 @@ import com.example.tutor_demo.dto.StudentProfileDto;
 @RestController
 public class StudentProfileController {
 
+    @Autowired
+    private JwtUtils authUtils;
+
     private final StudentProfileService studentProfileService;
     private final SessionManagementService sessionManagementService;
     
@@ -29,7 +32,7 @@ public class StudentProfileController {
     }
 
     @GetMapping("/api/student/profile")
-    public ResponseEntity<APIResponse<StudentProfileDto>> getStudentProfile( HttpServletRequest request) {
+    public ResponseEntity<APIResponse<StudentProfileDto>> getStudentProfile( HttpServletRequest request) throws Exception {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401)
@@ -37,7 +40,7 @@ public class StudentProfileController {
         }
 
         String token = authHeader.substring(7);
-        String studentId = JwtUtils.extractUserId(token);
+        String studentId = authUtils.getUsername(token);
 
         StudentProfileDto profile = studentProfileService.getStudentProfile(studentId);
         if (profile == null) {
@@ -54,7 +57,7 @@ public class StudentProfileController {
     public ResponseEntity<APIResponse<StudentProfileDto>> updateSubjects(
             @RequestBody UpdateImprovementSubjectReq request,
             HttpServletRequest http
-    ) {
+    )  throws Exception {
         String auth = http.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
             return ResponseEntity.status(401)
@@ -62,9 +65,9 @@ public class StudentProfileController {
         }
 
         String jwt = auth.substring(7);
-        String studentId = JwtUtils.extractUserId(jwt);
+        String studentId = authUtils.getUsername(jwt);
 
-        StudentProfile updated =
+        Student updated =
                 studentProfileService.updateImprovementSubjects(
                         studentId,
                         request.getSubjects()
@@ -77,16 +80,16 @@ public class StudentProfileController {
         );
     }
 
-    @GetMapping("/student/sessions")
+    @GetMapping("/api/student/sessions")
     public ResponseEntity <APIResponse<Page<StudentSessionDto>>> getRegisteredSessions( @RequestHeader("Authorization") String authHeader,
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "10") Integer limit,
         @RequestParam(required = false) String date,
         @RequestParam(required = false) String startDate,
-        @RequestParam(required = false) String endDate){
+        @RequestParam(required = false) String endDate) throws Exception {
                 // Lấy JWT từ header
         String token = authHeader.replace("Bearer ", "");
-        String studentId = JwtUtils.extractUserId(token);
+        String studentId = authUtils.getUsername(token);
          // Gọi service lấy danh sách session
         Page<StudentSessionDto> data = sessionManagementService.getRegisteredSessionByStudent(studentId, page, limit, date, startDate, endDate);
 
@@ -99,7 +102,7 @@ public class StudentProfileController {
 
         }
     
-
+    @GetMapping("/api/student/sessions/cancel")
     public ResponseEntity<APIResponse<String>> canccelSession(){
         return ResponseEntity.status(400).body(new APIResponse<String>(false, 400, "Error occured", null));
     }

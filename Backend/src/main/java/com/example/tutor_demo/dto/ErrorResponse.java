@@ -20,12 +20,12 @@ public class ErrorResponse<T>{
     private int statusCode;
     private String message;
     private T data;
-    private Error err;
+    private Error errors;
 
     public ErrorResponse(int code, String message, String errField, String Errmessage, T data){
         statusCode= code;
         this.message = message;
-        this.err = new Error(errField, Errmessage);
+        this.errors = new Error(errField, Errmessage);
         this.data = data;
     }
     

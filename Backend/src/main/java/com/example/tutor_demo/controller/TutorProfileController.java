@@ -30,6 +30,8 @@ public class TutorProfileController {
     private final TutorProfileService tutorProfileService;
     private final SessionManagementService sessionManagementService;
     private final MinutesService minutesService;
+    @Autowired
+    private JwtUtils authUtils;
 
     @Autowired
     public TutorProfileController(TutorProfileService tutorProfileService, SessionManagementService sessionManagementService, MinutesService minutesService) {
@@ -38,7 +40,7 @@ public class TutorProfileController {
         this.minutesService = minutesService;
     }
 
-    @GetMapping("/tutor/profile/{tutorId}")
+    @GetMapping("/api/tutor/profile/{tutorId}")
     public ResponseEntity<APIResponse<TutorProfileDto>> getTutorProfile(@PathVariable String tutorId) {
         TutorProfileDto profile = tutorProfileService.getTutorProfile(tutorId);
         return ResponseEntity.ok(
@@ -46,19 +48,19 @@ public class TutorProfileController {
         );
     }
 
-    @GetMapping("/tutor/{tutorId}/session")
+    @GetMapping("/api/tutor/{tutorId}/session")
     public ResponseEntity<APIResponse<List<SessionDataDto>>> getTutorSessions(@PathVariable String tutorId) {
        var queryRes = sessionManagementService.getSession(tutorId);
        return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", queryRes));
     }
 
-    @GetMapping("/tutor/sessions/{sessionId}")
+    @GetMapping("/api/tutor/sessions/{sessionId}")
     public ResponseEntity<APIResponse<SessionDataDto>> getInfoSession(@PathVariable String sesionId) {
        SessionDataDto queryRes = sessionManagementService.getSessionDetailedInfo(sesionId);
        return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", queryRes));
     }
 
-    @GetMapping("/tutor/sessions/{sessionId}/students")
+    @GetMapping("/api/tutor/sessions/{sessionId}/students")
     public ResponseEntity<APIResponse<PaginatedData<RegisteredStudentDto>>> getRegisteredStudents(
             @PathVariable String sessionId,
             @RequestParam(defaultValue = "1") int page,
@@ -68,7 +70,7 @@ public class TutorProfileController {
         return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", data));
     }
     
-    @PostMapping(value = "/tutor/sessions/{sessionId}/minutes", consumes = "multipart/form-data")
+    @PostMapping(value = "/api/tutor/sessions/{sessionId}/minutes", consumes = "multipart/form-data")
     public ResponseEntity<APIResponse<SessionMinutesDto>> uploadSessionMinutes( @PathVariable String sessionId,
         @RequestParam("file") MultipartFile file,
         HttpServletRequest request){
@@ -80,7 +82,7 @@ public class TutorProfileController {
     }
 
     @GetMapping("api/tutor/profile")
-    public ResponseEntity<Object> getCurrrentTutorProfile(HttpServletRequest request){
+    public ResponseEntity<Object> getCurrrentTutorProfile(HttpServletRequest request) throws Exception {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             ErrorResponse<Object> errResponse = new ErrorResponse<>(401, "Validation error", "string", "string", null);
@@ -89,7 +91,7 @@ public class TutorProfileController {
         }
 
         String token = authHeader.substring(7);
-        String tutorId = JwtUtils.extractUserId(token);
+        String tutorId = authUtils.getUsername(token);
         TutorProfileDto profile = tutorProfileService.getTutorProfile(tutorId);
         return ResponseEntity.ok(
                 new APIResponse<>(true, 200, "Success", profile)

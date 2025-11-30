@@ -15,6 +15,7 @@ public class SecurityConfig {
             "/",
             "/home/**",
             "/api/**",
+            "/me/**"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
