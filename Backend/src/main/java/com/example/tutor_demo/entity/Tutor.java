@@ -3,7 +3,7 @@ package com.example.tutor_demo.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
+
 
 @Entity
 @Table(name = "tutor")
@@ -43,7 +43,7 @@ public class Tutor {
     @ElementCollection
     @CollectionTable(
         name = "teachingSubjects",
-        joinColumns = @JoinColumn(name = "id")
+        joinColumns = @JoinColumn(name = "tutor_id")
     )
     @Column(name = "subject")
     private List<String> teachingSubjects;

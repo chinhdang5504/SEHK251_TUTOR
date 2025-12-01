@@ -12,10 +12,6 @@ import com.example.tutor_demo.util.JwtUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import com.example.tutor_demo.dto.UpdateImprovementSubjectReq;
-import com.example.tutor_demo.dto.APIResponse;
-import com.example.tutor_demo.dto.StudentProfileDto;
-
 @RestController
 public class StudentProfileController {
 
@@ -40,9 +36,9 @@ public class StudentProfileController {
         }
 
         String token = authHeader.substring(7);
-        String studentId = authUtils.getUsername(token);
+        String username = authUtils.getUsername(token);
 
-        StudentProfileDto profile = studentProfileService.getStudentProfile(studentId);
+        StudentProfileDto profile = studentProfileService.getStudentProfileByName(username);
         if (profile == null) {
             return ResponseEntity.status(404)
                     .body(new APIResponse<>(false, 404, "Student not found", null));
@@ -53,7 +49,7 @@ public class StudentProfileController {
         );
     }
 
-    @PutMapping("api/student/profile/subjects")
+    @PutMapping("/api/student/profile/subjects")
     public ResponseEntity<APIResponse<StudentProfileDto>> updateSubjects(
             @RequestBody UpdateImprovementSubjectReq request,
             HttpServletRequest http
@@ -81,7 +77,7 @@ public class StudentProfileController {
     }
 
     @GetMapping("/api/student/sessions")
-    public ResponseEntity <APIResponse<Page<StudentSessionDto>>> getRegisteredSessions( @RequestHeader("Authorization") String authHeader,
+    public ResponseEntity <APIResponse<PaginatedData<StudentSessionDto>>> getRegisteredSessions( @RequestHeader("Authorization") String authHeader,
         @RequestParam(defaultValue = "1") Integer page,
         @RequestParam(defaultValue = "10") Integer limit,
         @RequestParam(required = false) String date,
@@ -89,10 +85,21 @@ public class StudentProfileController {
         @RequestParam(required = false) String endDate) throws Exception {
                 // Lấy JWT từ header
         String token = authHeader.replace("Bearer ", "");
-        String studentId = authUtils.getUsername(token);
-         // Gọi service lấy danh sách session
-        Page<StudentSessionDto> data = sessionManagementService.getRegisteredSessionByStudent(studentId, page, limit, date, startDate, endDate);
+        String username = authUtils.getUsername(token);
 
+        // lấy studentid từ việc truy vấn student qua username
+        StudentProfileDto profile = studentProfileService.getStudentProfileByName(username);
+        String studentId = profile.getId();
+         // Gọi service lấy danh sách session
+        Page<StudentSessionDto> queryResult = sessionManagementService.getRegisteredSessionByStudent(studentId, page, limit, date, startDate, endDate);
+
+        PaginatedData<StudentSessionDto> data = new PaginatedData<>(
+                queryResult.getContent(),
+                (int)queryResult.getTotalElements(),
+                page,
+                queryResult.getTotalPages(),
+                limit
+        );
         return ResponseEntity.ok(new APIResponse<>(
                 true,
                 200,
@@ -102,8 +109,19 @@ public class StudentProfileController {
 
         }
     
-    @GetMapping("/api/student/sessions/cancel")
-    public ResponseEntity<APIResponse<String>> canccelSession(){
-        return ResponseEntity.status(400).body(new APIResponse<String>(false, 400, "Error occured", null));
+    @PostMapping("/api/student/sessions/{sessionId}/cancel")
+    public ResponseEntity<APIResponse<String>> canccelSession(@PathVariable String sessionId){
+        return ResponseEntity.status(200).body(new APIResponse<String>(true, 200, "Success", "Session canceled successfully"));     
+    }
+
+    @PostMapping("/api/student/sessions/{sessionId}/feedback")
+    public ResponseEntity<APIResponse<String>> giveFeedback(@PathVariable String sessionId, @RequestBody FeedbackDataDto feedbackReq){
+        return ResponseEntity.status(200).body(new APIResponse<String>(true, 200, "Success", "Feedback submitted successfully"));     
+    }
+
+    @PostMapping("/api/student/requests")
+    public ResponseEntity<APIResponse<ClassPetitionResponse>> sendRequest(@RequestBody OpenSessionReq requestDto){
+        ClassPetitionResponse response = new ClassPetitionResponse("REQ12345", "Request submitted successfully");
+        return ResponseEntity.status(200).body(new APIResponse<ClassPetitionResponse>(true, 200, "Success", response));     
     }
 }

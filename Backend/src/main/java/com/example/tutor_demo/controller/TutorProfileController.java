@@ -81,18 +81,23 @@ public class TutorProfileController {
             
     }
 
-    @GetMapping("api/tutor/profile")
+    @GetMapping("/api/tutor/profile")
     public ResponseEntity<Object> getCurrrentTutorProfile(HttpServletRequest request) throws Exception {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            ErrorResponse<Object> errResponse = new ErrorResponse<>(401, "Validation error", "string", "string", null);
             return ResponseEntity.status(401)
-                    .body(errResponse);
+                    .body(new APIResponse<>(false, 401, "Unauthorized", null));
         }
 
         String token = authHeader.substring(7);
-        String tutorId = authUtils.getUsername(token);
-        TutorProfileDto profile = tutorProfileService.getTutorProfile(tutorId);
+        String username = authUtils.getUsername(token);
+
+        TutorProfileDto profile = tutorProfileService.getTutorProfileByName(username);
+        if (profile == null) {
+            return ResponseEntity.status(404)
+                    .body(new APIResponse<>(false, 404, "Tutor not found", null));
+        }
+
         return ResponseEntity.ok(
                 new APIResponse<>(true, 200, "Success", profile)
         );

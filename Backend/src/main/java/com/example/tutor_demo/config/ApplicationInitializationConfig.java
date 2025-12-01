@@ -127,47 +127,49 @@ public class ApplicationInitializationConfig {
         };
     }
 
-     @Bean
-    @Transactional
-    public ApplicationRunner generateSampleData(
-            StudentProfileRepo studentRepo,
-            TutorProfileRepo tutorRepo
-    ) {
-        return args -> {
-            // Tạo 5 Student
-            for (int i = 1; i <= 5; i++) {
-                Student student = new Student(
-                        "student" + i,
-                        "Student " + i,
-                        "student" + i + "@example.com",
-                        null,
-                        "090000000" + i,
-                        "District " + i,
-                        LocalDate.of(2005, 5, i), // bạn có thể viết method này trả LocalDate
-                        i % 2 == 0 ? "Male" : "Female",
-                        "Computer Science and Engineering",
-                        List.of("Math", "Physics", "English")
-                );
-                studentRepo.save(student);
-            }
-
-            // Tạo 5 Tutor
-            for (int i = 1; i <= 5; i++) {
-                Tutor tutor = new Tutor(
-                        "Tutor " + i,
-                        "tutor" + i,
-                        "tutor" + i + "@example.com",
-                        null,
-                        "090000000" + i,
-                        "District " + i,
-                        LocalDate.of(2005, 5, i),
-                        i % 2 == 0 ? "Male" : "Female",
-                        "Bio for tutor " + i,
-                        List.of("Math", "Physics", "Computer Science"),
-                        4.0f + i * 0.1f
-                );
-                tutorRepo.save(tutor);
-            }
-        };
+    public static List<Student> generatesStudents(){
+        List<Student> students = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Student student = new Student(
+                    "S000" + i,
+                    "student" + i,
+                    "Student " + i,
+                    "student" + i + "@example.com",
+                    null,
+                    "090000000" + i,
+                    "District " + i,
+                    LocalDate.of(2005, 5, i),
+                    i % 2 == 0 ? "Male" : "Female",
+                    "Computer Science and Engineering",
+                    List.of("Math", "Physics", "English")
+            );
+            students.add(student);
+        }
+        return students;
     }
+    
+    public static  List<Tutor> generatesTutors(){
+        List<Tutor> tutors = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Tutor tutor = new Tutor(
+                    "T000" + i,
+                    "Tutor " + i,
+                    "tutor" + i,
+                    "tutor" + i + "@example.com",
+                    null,
+                    "090000000" + i,
+                    "District " + i,
+                    LocalDate.of(2005, 5, i),
+                    i % 2 == 0 ? "Male" : "Female",
+                    "Bio for tutor " + i,
+                    List.of("Math", "Physics", "Computer Science"),
+                    4.0f + i * 0.1f
+            );
+            tutors.add(tutor);
+           
+        }
+        return tutors;
+    }
+
+
 }

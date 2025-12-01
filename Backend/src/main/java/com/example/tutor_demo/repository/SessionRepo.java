@@ -18,8 +18,8 @@ public interface SessionRepo extends JpaRepository<Session, String> {
 
     public List<Session> findByTutorId(String tutorId);
     Page<Session> findByDate(java.time.LocalDate date, Pageable pageable);
-    Page<Session> findByDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
-
+    
+    Page<Session> findByDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);    
     @Query("""
         SELECT s FROM Session s
         WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :keyword, '%'))

@@ -25,11 +25,6 @@ public class AuthController {
         this.userService = userService;
         this.jwtUtils = jwtUtils;
     }
-
-    @GetMapping("/api/token")
-    public ResponseEntity getToken(HttpServletRequest request) {
-        return ResponseEntity.ok(APIResponse.success("Token is valid"));
-    }
     
     @GetMapping("/api/me")
     public ResponseEntity getMe(HttpServletRequest request) throws Exception {

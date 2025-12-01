@@ -53,14 +53,42 @@ public class StudentProfileService {
         return dto;
     }
 
+     public StudentProfileDto getStudentProfileByName(String studentName) {
+
+        // Lấy phần data from DB (improvementSubjects + faculty)
+        Student profile = profileRepo.findByUsername(studentName);
+        if (profile == null) return null;
+
+        // Lấy thông tin cá nhân từ SSO trong token
+        // (ví dụ token chứa các claim email, name,…)
+        // Nếu token KHÔNG chứa => bạn phải gọi SSO server
+        String fullName = profile.getFullName(); // sync từ SSO
+        String email = profile.getEmail();
+        String phone = profile.getPhone();
+        String address = profile.getAddress();
+        String avatar = profile.getAvatar();
+
+        StudentProfileDto dto = new StudentProfileDto();
+        dto.setId(profile.getId());
+        dto.setFullName(fullName);
+        dto.setEmail(email);
+        dto.setPhone(phone);
+        dto.setAddress(address);
+        dto.setDateOfBirth(profile.getDateOfBirth());
+        dto.setSex(profile.getSex());
+        dto.setFaculty(profile.getFaculty());
+
+        dto.setImprovementSubjects(
+                profile.getImprovementSubjects()   // List<String>
+        );
+
+        dto.setAvatar(avatar);
+
+        return dto;
+    }
     @Transactional
     public Student updateImprovementSubjects(String studentId, List<String> subjects) {
-        Student profile = profileRepo.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student profile not found"));
-
-        profile.setImprovementSubjects(subjects);
-
-        return profileRepo.save(profile);
+        return null;
     }
 
     public StudentProfileDto toDto(Student profile) {

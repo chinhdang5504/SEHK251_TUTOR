@@ -33,4 +33,23 @@ public class TutorProfileService {
         dto.setDateOfBirth(profile.getDateOfBirth());
         return dto;
     }
+
+    public TutorProfileDto getTutorProfileByName(String username) {
+        Tutor profile = tutorProfileRepo.findByUsername(username);
+        if (profile == null) throw new RuntimeException("Tutor profile not found");
+
+        TutorProfileDto dto = new TutorProfileDto();
+        dto.setId(profile.getId());
+        dto.setFullName(profile.getFullName());
+        dto.setEmail(profile.getEmail());
+        dto.setPhone(profile.getPhone());
+        dto.setAddress(profile.getAddress());
+        dto.setAvatar(profile.getAvatar());
+        dto.setTeachingSubjects(profile.getTeachingSubjects());
+        dto.setBio(profile.getBio());
+        dto.setRating(profile.getRating());
+        dto.setSex(profile.getSex());
+        dto.setDateOfBirth(profile.getDateOfBirth());
+        return dto;
+    }
 }
