@@ -26,7 +26,7 @@ import java.util.*;
 
 @RestController
 public class TutorProfileController {
-    
+
     private final TutorProfileService tutorProfileService;
     private final SessionManagementService sessionManagementService;
     private final MinutesService minutesService;
@@ -69,7 +69,7 @@ public class TutorProfileController {
         PaginatedData<RegisteredStudentDto> data = sessionManagementService.getRegisteredStudents(sessionId, page, limit);
         return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", data));
     }
-    
+
     @PostMapping(value = "/api/tutor/sessions/{sessionId}/minutes", consumes = "multipart/form-data")
     public ResponseEntity<APIResponse<SessionMinutesDto>> uploadSessionMinutes( @PathVariable String sessionId,
         @RequestParam("file") MultipartFile file,
@@ -78,13 +78,13 @@ public class TutorProfileController {
             String message = "Minutes uploaded successfully";
             SessionMinutesDto response = new SessionMinutesDto(minutesUrl, message);
             return ResponseEntity.ok(new APIResponse<SessionMinutesDto>(true, 200, "Success", response));
-            
+
     }
 
     @GetMapping("/api/tutor/profile")
     public ResponseEntity<Object> getCurrrentTutorProfile(HttpServletRequest request) throws Exception {
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401)
                     .body(new APIResponse<>(false, 401, "Unauthorized", null));
         }

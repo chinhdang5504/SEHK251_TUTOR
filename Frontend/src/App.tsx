@@ -9,6 +9,7 @@ import Tutor from "@/page/Student/Tutor"
 import TutorInfo from "@/page/Student/TutorInfo"
 import SessionDetailsPage from "@/page/Tutor/SessionDetail"
 import MySessionsPage from "@/page/Tutor/TutorDashboard"
+import TutorProfile from "@/page/Tutor/TutorProfile"
 import { Route, Routes } from "react-router-dom"
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
 
       <Route path='/tutor/dashboard' element={<MySessionsPage />} />
-      <Route path='/tutor/profile' element={<StudentProfile />} />
+      <Route path='/tutor/profile' element={<TutorProfile />} />
       <Route path='/tutor/session-detail/:id' element={<SessionDetailsPage />} />
 
 

@@ -27,10 +27,7 @@ PrivateAxios.interceptors.response.use(
     return response
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-      Cookies.remove('TOKEN')
-      window.location.href = 'http://localhost:8081/sso/login'
-    }
+    console.error(error)
     return Promise.reject(error)
   }
 )

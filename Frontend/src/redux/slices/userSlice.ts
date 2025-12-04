@@ -5,7 +5,6 @@ const initialState: User = {
   fullName: '',
   username: '',
   token: '',
-  refreshToken: '',
   role: '',
   isAuthenticated: false
 }
@@ -17,14 +16,13 @@ const UserSlice = createSlice({
     login: (state, action: PayloadAction<Omit<User, 'isAuthenticated'>>) => {
       state.username = action.payload.username
       state.token = action.payload.token
-      state.refreshToken = action.payload.refreshToken
       state.role = action.payload.role
+      state.fullName = action.payload.fullName
       state.isAuthenticated = true
     },
     logout: (state) => {
       state.username = ''
       state.token = ''
-      state.refreshToken = ''
       state.role = ''
       state.isAuthenticated = false
     }

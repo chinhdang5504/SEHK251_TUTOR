@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux'
 import type { RootState } from '@/redux/store'
 
 // --- Types ---
-type Role = 'student' | 'tutor'
+type Role = 'STUDENT' | 'TUTOR'
 
 interface SidebarItem {
   path: string
@@ -22,8 +22,8 @@ interface SidebarItem {
 }
 
 interface SidebarItemsByRole {
-  student: SidebarItem[]
-  tutor: SidebarItem[]
+  STUDENT: SidebarItem[]
+  TUTOR: SidebarItem[]
 }
 
 const Sidebar = () => {
@@ -31,18 +31,18 @@ const Sidebar = () => {
 
   // Lấy user từ redux store
   const user = useSelector((state: RootState) => state.user)
-  const role: Role = (user?.role as Role) || 'student'
+  const role: Role = (user?.role as Role) || 'STUDENT'
 
   // --- Sidebar items ---
   const sidebarItemsByRole: SidebarItemsByRole = {
-    student: [
+    STUDENT: [
       { path: '/student/dashboard', content: 'Dashboard', icon: Home },
       { path: '/student/tutors', content: 'Tutor', icon: Book },
       { path: '/student/public-session', content: 'Public Sessions', icon: Star },
       { path: '/library', content: 'Library', icon: Calendar },
     ],
-    tutor: [
-      { path: '/tutor', content: 'Dashboard', icon: Home },
+    TUTOR: [
+      { path: '/tutor/dashboard', content: 'Dashboard', icon: Home },
       { path: '/library', content: 'Library', icon: Calendar },
     ],
   }

@@ -28,7 +28,7 @@ export const useTutorInfo = (id?: string) => {
       if (!id) return mockClasses
       try {
         const res = await getClassByTutor(id)
-        return res.data
+        return res
       } catch {
         return mockClasses
       }

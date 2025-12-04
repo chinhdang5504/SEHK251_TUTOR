@@ -8,6 +8,8 @@ import com.nimbusds.jwt.SignedJWT;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,7 @@ import java.text.ParseException;
 @Component
 public class JwtUtils {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
     @Value("${jwt.secret}")
     private String secret;
 
@@ -27,6 +30,7 @@ public class JwtUtils {
             throw new JOSEException("Invalid token signature");
         }
         JWTClaimsSet parsedClaims = parsedJWT.getJWTClaimsSet();
-        return parsedClaims.getStringClaim("username");
+        log.info("Parsed JWT claims: {}", parsedClaims);
+        return parsedClaims.getStringClaim("sub");
     }
 }

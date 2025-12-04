@@ -56,7 +56,7 @@ const Tutor = () => {
                     />
                     <h2 className='text-base font-semibold text-center text-gray-800'>{tutor.fullName}</h2>
                     <p className='text-sm text-gray-600 mb-1 text-center line-clamp-1'>
-                      {tutor.subject} | {tutor.faculty}
+                      {tutor.teachingSubjects.slice(0, 2).join(', ')} {tutor.teachingSubjects.length > 2 ? '...' : ''}
                     </p>
                     <p className='text-sm text-center mb-3 line-clamp-3 text-gray-700'>{tutor.bio}</p>
                   </div>
