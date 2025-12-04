@@ -13,3 +13,8 @@
 -Chạy lệnh:
 ```bash
   mvn spring-boot:run
+
+## Chạy ai-service
+- mở **Windows Powershell** trong thư mục 'ai-service'
+- chạy lệnh:
+  py -m uvicorn main:app
