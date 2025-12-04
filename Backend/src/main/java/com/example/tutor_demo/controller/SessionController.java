@@ -20,7 +20,7 @@ public class SessionController {
    public SessionController(SessionManagementService service){
         this.sessionManagementService = service;
    }
-   @GetMapping("/sessions/public")
+   @GetMapping("/api/sessions/public")
     public ResponseEntity<APIResponse<PaginatedData<SessionDataDto>>> getPublicSessions(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer limit,
@@ -41,7 +41,7 @@ public class SessionController {
         return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", data));
     }
     
-     @GetMapping("/session/search")
+     @GetMapping("/api/session/search")
     public ResponseEntity<APIResponse<PaginatedData<SessionDataDto>>> searchSessions(
             @RequestParam(name = "q") String keyword,
             @RequestParam(defaultValue = "1") Integer page,
@@ -63,7 +63,7 @@ public class SessionController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/sessions/{sessionId}/enroll")
+    @PostMapping("/api/sessions/{sessionId}/enroll")
     public ResponseEntity<APIResponse<Object>> enrollSession(@PathVariable String sessionId){
         return ResponseEntity.status(400).body(new APIResponse<>(false, 400, "Error Occured", null));
     }

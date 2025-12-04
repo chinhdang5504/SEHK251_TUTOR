@@ -21,16 +21,18 @@ public class Feedback {
     @Column(name = "comment", nullable = false, length = 1000)
     private String comment;
 
-    @Column(name = "session_id", nullable = false, length = 50)
-    private String sessionId; // Khóa ngoại tham chiếu tới Session
+    @OneToOne
+    @JoinColumn(name = "session_id", nullable = false)
+    private Session sessionId; // Khóa ngoại tham chiếu tới Session
 
-    @Column(name = "student_id", nullable = false, length = 50)
-    private String studentId; // Ai feedback
+    @OneToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student studentId; // Ai feedback
      
     // Constructors
     public Feedback() {}
 
-    public Feedback(Integer rating, String comment, String sessionId, String studentId) {
+    public Feedback(Integer rating, String comment, Session sessionId, Student studentId) {
         this.rating = rating;
         this.comment = comment;
         this.sessionId = sessionId;

@@ -16,6 +16,15 @@ public class APIResponse<T> {
         this.data = data;
     }
 
+    public static <T> APIResponse<T> success(T data) {
+        APIResponse<T> res = new APIResponse<T>(true, 200, "Success", data);
+        return res;
+    }
+     public static APIResponse<?> error(int code, String message) {
+        APIResponse<?> res = new APIResponse<>(false, code, message, null);
+        return res;
+    }
+
     // just getters
     public boolean isSuccess() {
         return success;

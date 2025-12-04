@@ -3,7 +3,7 @@ package com.example.tutor_demo.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.example.tutor_demo.entity.TutorProfile;
+import com.example.tutor_demo.entity.Tutor;
 public class TutorProfileDto {
     private String id;
     private String fullName;
@@ -18,7 +18,7 @@ public class TutorProfileDto {
     private LocalDate dateOfBirth;
 
     public TutorProfileDto(){}
-    public TutorProfileDto(TutorProfile profile) {
+    public TutorProfileDto(Tutor profile) {
         this.id = profile.getId();
         this.fullName = profile.getFullName();
         this.email = profile.getEmail();

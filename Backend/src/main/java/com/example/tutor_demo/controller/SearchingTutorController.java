@@ -20,7 +20,7 @@ public class SearchingTutorController {
     public SearchingTutorController(SearchTutorService service){
         tutorProfileService = service;
     }
-    @GetMapping("/tutors/search")
+    @GetMapping("/api/tutors/search")
     public ResponseEntity<APIResponse<PaginatedData<TutorProfileDto>>> searchTutors(
         @RequestParam String q,
         @RequestParam(defaultValue = "1") int page,

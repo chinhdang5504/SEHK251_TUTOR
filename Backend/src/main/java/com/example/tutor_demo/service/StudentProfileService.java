@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.tutor_demo.dto.StudentProfileDto;
-import com.example.tutor_demo.entity.StudentProfile;
+import com.example.tutor_demo.entity.Student;
 import com.example.tutor_demo.repository.StudentProfileRepo;
 
 
@@ -22,7 +22,7 @@ public class StudentProfileService {
     public StudentProfileDto getStudentProfile(String studentId) {
 
         // Lấy phần data from DB (improvementSubjects + faculty)
-        StudentProfile profile = profileRepo.findById(studentId).orElse(null);
+        Student profile = profileRepo.findById(studentId).orElse(null);
         if (profile == null) return null;
 
         // Lấy thông tin cá nhân từ SSO trong token
@@ -53,17 +53,45 @@ public class StudentProfileService {
         return dto;
     }
 
+     public StudentProfileDto getStudentProfileByName(String studentName) {
+
+        // Lấy phần data from DB (improvementSubjects + faculty)
+        Student profile = profileRepo.findByUsername(studentName);
+        if (profile == null) return null;
+
+        // Lấy thông tin cá nhân từ SSO trong token
+        // (ví dụ token chứa các claim email, name,…)
+        // Nếu token KHÔNG chứa => bạn phải gọi SSO server
+        String fullName = profile.getFullName(); // sync từ SSO
+        String email = profile.getEmail();
+        String phone = profile.getPhone();
+        String address = profile.getAddress();
+        String avatar = profile.getAvatar();
+
+        StudentProfileDto dto = new StudentProfileDto();
+        dto.setId(profile.getId());
+        dto.setFullName(fullName);
+        dto.setEmail(email);
+        dto.setPhone(phone);
+        dto.setAddress(address);
+        dto.setDateOfBirth(profile.getDateOfBirth());
+        dto.setSex(profile.getSex());
+        dto.setFaculty(profile.getFaculty());
+
+        dto.setImprovementSubjects(
+                profile.getImprovementSubjects()   // List<String>
+        );
+
+        dto.setAvatar(avatar);
+
+        return dto;
+    }
     @Transactional
-    public StudentProfile updateImprovementSubjects(String studentId, List<String> subjects) {
-        StudentProfile profile = profileRepo.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student profile not found"));
-
-        profile.setImprovementSubjects(subjects);
-
-        return profileRepo.save(profile);
+    public Student updateImprovementSubjects(String studentId, List<String> subjects) {
+        return null;
     }
 
-    public StudentProfileDto toDto(StudentProfile profile) {
+    public StudentProfileDto toDto(Student profile) {
         StudentProfileDto dto = new StudentProfileDto();
         dto.setId(profile.getId());
         dto.setFullName(profile.getFullName());

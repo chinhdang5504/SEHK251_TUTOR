@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 
@@ -23,11 +24,12 @@ import com.example.tutor_demo.service.LibraryService;
 public class LibraryController {
     private final LibraryService libraryService;
 
+    @Autowired
     public LibraryController(LibraryService service){
         this.libraryService = service;
     }
 
-    @GetMapping("/library/documents")
+    @GetMapping("/api/library/documents")
    public ResponseEntity<APIResponse<PaginatedData<?>>> getDocuments(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int limit) {
@@ -35,7 +37,7 @@ public class LibraryController {
             return ResponseEntity.ok(new APIResponse<>(true, 200, "Success", allDocuments));
     }
 
-    @GetMapping("/library/download/{documentId}")
+    @GetMapping("/api/library/download/{documentId}")
     public ResponseEntity downloadDocument(@PathVariable int documentId){
          try {
             Resource file = libraryService.getDocumentFile(documentId);
@@ -53,7 +55,7 @@ public class LibraryController {
         }
     }
 
-    @PostMapping("/library/upload")
+    @PostMapping("/api/library/upload")
     public ResponseEntity<APIResponse<Object>> uploadDocument(@RequestParam("file") MultipartFile file,
         @RequestParam("title") String title,
         @RequestParam("author") String author){

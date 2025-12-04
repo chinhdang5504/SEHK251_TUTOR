@@ -1,14 +1,21 @@
 package com.example.tutor_demo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(nullable = false, unique = true)
@@ -20,10 +27,12 @@ public class User {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(name = "role", nullable = false)
+    @Column (name = "username", nullable = false, unique = true)
+    private String username;
+    
+    @Column(name = "role")
     private String role;
-
-    @Column(name = "avatar")
+    @Column(name = "avatar", nullable = true)
     private String avatar;
 
     // Getters and Setters
@@ -52,10 +61,10 @@ public class User {
         this.fullName = fullName;
     }
     public String getRole() {
-        return role;
+        return this.role;
     }
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(String new_role) {
+        this.role = new_role;
     }
     public String getAvatar() {
         return avatar;
@@ -63,4 +72,6 @@ public class User {
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
+
+    public String getUsername() {return this.username;}
 }
