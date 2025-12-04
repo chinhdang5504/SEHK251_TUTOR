@@ -48,12 +48,13 @@ const TutorInfo = () => {
           <div className='border p-4 rounded-[12px]'>
             <h2 className='font-semibold text-gray-700 mb-2 text-lg'>Tutor Information</h2>
             <div className='flex items-start gap-12'>
-              <img src={tutor.avatar} alt={tutor.fullName} className='w-36 h-36 rounded-[2px] object-cover' />
+              <img src={tutor.avatar || 'https://i.pravatar.cc/150?img=1'} alt={tutor.fullName} className='w-36 h-36 rounded-[2px] object-cover' />
               <div className='flex-1 space-y-2 text-sm'>
                 <p><strong>Name:</strong> {tutor.fullName}</p>
-                <p><strong>Faculty:</strong> {tutor.faculty}</p>
+                <p><strong>Address:</strong> {tutor.address}</p>
                 <p><strong>Email:</strong> {tutor.email}</p>
                 <p><strong>Phone:</strong> {tutor.phone}</p>
+                <p><strong>Teaching Subjects:</strong> {tutor.teachingSubjects.join(', ')}</p>
                 <p><strong>Bio:</strong> {tutor.bio}</p>
               </div>
             </div>
@@ -72,11 +73,11 @@ const TutorInfo = () => {
                 </tr>
               </thead>
               <tbody>
-                {classes.map((cls: Session) => (
+                {classes?.map((cls: Session) => (
                   <tr key={cls.id} className='border-b border-gray-100 hover:bg-gray-50 transition-colors'>
                     <td className='px-4 py-3'>{cls.date}</td>
                     <td className='px-4 py-3'>{cls.title}</td>
-                    <td className='px-4 py-3'>{cls.maxCapacity - cls.currentEnrollment} slots</td>
+                    <td className='px-4 py-3'>{cls.capacity - cls.currentEnrollment} slots</td>
                     <td className='px-4 py-3'>
                       {cls.enrolled ? (
                         <Button
@@ -92,9 +93,9 @@ const TutorInfo = () => {
                           size="sm"
                           variant="destructive"
                           onClick={() => handleEnroll(cls.id)}
-                          disabled={enrollMutation.isPending || cls.maxCapacity - cls.currentEnrollment === 0}
+                          disabled={enrollMutation.isPending || cls.capacity - cls.currentEnrollment === 0}
                         >
-                          {enrollMutation.isPending ? 'Enrolling...' : cls.maxCapacity - cls.currentEnrollment === 0 ? 'Full' : 'Enroll'}
+                          {enrollMutation.isPending ? 'Enrolling...' : cls.capacity - cls.currentEnrollment === 0 ? 'Full' : 'Enroll'}
                         </Button>
 
                       )}

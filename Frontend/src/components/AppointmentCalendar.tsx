@@ -35,8 +35,9 @@ const AppointmentCalendar = ({
             <div
               key={day.date}
               onClick={() => onDateSelect(day.fullDate)}
-              className={`p-4 rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-[#B3261E] text-white' : 'bg-white hover:bg-gray-200'
-                }`}
+              className={`p-4 rounded-lg cursor-pointer transition-colors ${
+                isSelected ? 'bg-[#B3261E] text-white' : 'bg-white hover:bg-gray-200'
+              }`}
             >
               <div className='text-xs font-semibold uppercase'>{day.day}</div>
               <div className='text-2xl font-bold mt-1'>{day.date}</div>
@@ -55,8 +56,9 @@ const AppointmentCalendar = ({
           <button
             key={i}
             onClick={() => onCalendarPageChange(i)}
-            className={`w-3 h-3 rounded-full transition-colors ${currentCalendarPage === i ? 'bg-red-600' : 'bg-gray-300'
-              }`}
+            className={`w-3 h-3 rounded-full transition-colors ${
+              currentCalendarPage === i ? 'bg-red-600' : 'bg-gray-300'
+            }`}
             aria-label={`Go to week ${i + 1}`}
           />
         ))}

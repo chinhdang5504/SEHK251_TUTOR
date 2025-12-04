@@ -2,25 +2,40 @@
 import { useCurrentUser } from '@/hooks/useUser'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { login } from '@/redux/slices/userSlice'
+import Cookies from 'js-cookie'
 
 const AfterLogin = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { data: user, isLoading, isError } = useCurrentUser()
 
   useEffect(() => {
     if (user) {
+      const token = Cookies.get('TOKEN') || ''
+      dispatch(
+        login({
+          fullName: user.fullName,
+          username: user.email,
+          token: token,
+          role: user.role
+        })
+      )
+
+      // Navigate dựa trên role
       switch (user.role) {
-        case 'tutor':
-          navigate('/tutor')
+        case 'TUTOR':
+          navigate('/tutor/dashboard')
           break
-        case 'student':
+        case 'STUDENT':
           navigate('/student/dashboard')
           break
         default:
           navigate('/')
       }
     }
-  }, [user, navigate])
+  }, [user, navigate, dispatch])
 
   if (isLoading) return <div>Loading...</div>
 

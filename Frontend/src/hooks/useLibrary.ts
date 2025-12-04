@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { downloadDocument, getDocuments, uploadDocument } from '@/api/libraryAPI'
+import { downloadDocument, getDocuments, uploadDocument } from '@/api/libraryApi'
 import { allDocuments } from '@/mocks/library.mock'
 
 export const useLibrary = (page: number, limit: number, useApi = false) => {
@@ -59,8 +59,16 @@ export const useLibrary = (page: number, limit: number, useApi = false) => {
   })
 
   return {
-    documents: data?.data || [],
-    totalPages: data?.totalPages || 0,
+    documents: data
+      ? ('data' in data && data.data
+        ? (Array.isArray(data.data) ? data.data : (data.data as any).data || [])
+        : [])
+      : [],
+    totalPages: data
+      ? ('totalPages' in data
+        ? data.totalPages
+        : ('data' in data && data.data && 'totalPages' in data.data ? data.data.totalPages : 0))
+      : 0,
 
     isLoading,
     isError,

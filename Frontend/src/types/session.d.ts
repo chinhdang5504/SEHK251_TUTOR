@@ -9,7 +9,7 @@ export type Session = {
   endTime: string
   room: string
   currentEnrollment: number
-  maxCapacity: number
+  capacity: number
   status: 'Canceled' | 'Completed' | 'Scheduled'
   enrolled?: boolean
 }
