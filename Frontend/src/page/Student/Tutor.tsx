@@ -7,6 +7,8 @@ import Sidebar from '@/components/Sidebar'
 import InternalHFooter from '@/components/InternalFooter'
 import HeaderSearch from '@/components/HeaderSearch'
 import type { Tutor } from '@/types/tutor'
+//@ts-ignore
+import TutorMatch from '@/components/TutorMatch'
 
 const Tutor = () => {
   const [query, setQuery] = useState('')
@@ -26,8 +28,8 @@ const Tutor = () => {
 
       <div className='flex flex-1'>
         <Sidebar />
-
         <main className='flex-1 ml-0 xl:ml-[282px] pt-8 px-8 mt-[80px] flex flex-col overflow-y-auto hide-scrollbar h-[calc(100vh-80px)]'>
+        <TutorMatch />
           {isLoading ? (
             <div className='text-center text-gray-500 mt-10'>Loading tutors...</div>
           ) : isError || !tutors || tutors.length === 0 ? (
