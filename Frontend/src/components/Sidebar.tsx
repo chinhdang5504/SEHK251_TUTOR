@@ -1,12 +1,4 @@
-import {
-  Book,
-  Calendar,
-  HelpCircle,
-  Settings,
-  Home,
-  Star,
-  Menu,
-} from 'lucide-react'
+import { Book, Calendar, HelpCircle, Settings, Home, Star, Menu } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -39,19 +31,19 @@ const Sidebar = () => {
       { path: '/student/dashboard', content: 'Dashboard', icon: Home },
       { path: '/student/tutors', content: 'Tutor', icon: Book },
       { path: '/student/public-session', content: 'Public Sessions', icon: Star },
-      { path: '/library', content: 'Library', icon: Calendar },
+      { path: '/library', content: 'Library', icon: Calendar }
     ],
     TUTOR: [
       { path: '/tutor/dashboard', content: 'Dashboard', icon: Home },
-      { path: '/library', content: 'Library', icon: Calendar },
-    ],
+      { path: '/library', content: 'Library', icon: Calendar }
+    ]
   }
 
   const sidebarItems = sidebarItemsByRole[role]
 
   const footer = [
     { icon: HelpCircle, content: 'Get help' },
-    { icon: Settings, content: 'Settings' },
+    { icon: Settings, content: 'Settings' }
   ]
 
   return (

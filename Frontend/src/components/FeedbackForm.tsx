@@ -48,30 +48,6 @@ const FeedbackForm = ({ sessions, defaultSessionId, onFeedbackSubmit, onClose }:
       <p className='text-gray-600 mb-6 text-center text-sm'>Share your experience with your student.</p>
 
       <form onSubmit={handleSubmit}>
-        <div className='mb-6'>
-          <label htmlFor='session' className='block text-md font-medium text-gray-700 mb-2'>
-            Student
-          </label>
-          <div className='relative'>
-            <select
-              id='session'
-              value={selectedSessionId}
-              onChange={(e) => setSelectedSessionId(e.target.value)}
-              className='block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-[#B3261E] focus:border-[#B3261E] appearance-none pr-10'
-              disabled={isSubmitting}
-            >
-              {sessions.map((session) => (
-                <option key={session.id} value={session.id}>
-                  {session.title} (Tutor: {session.tutorName})
-                </option>
-              ))}
-            </select>
-            <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
-              <ChevronDown className='w-4 h-4' />
-            </div>
-          </div>
-        </div>
-
         {/* Rating */}
         <div className='mb-6'>
           <label className='block text-md font-medium text-gray-700 mb-2'>Rating</label>
