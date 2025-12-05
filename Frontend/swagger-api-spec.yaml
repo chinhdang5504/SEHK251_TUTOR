@@ -1,0 +1,1199 @@
+openapi: 3.0.3
+info:
+  title: HCMUT Tutor System API
+  description: |
+    API specification cho hệ thống Tutor của HCMUT.
+    
+    **Lưu ý quan trọng:**
+    - Tất cả response đều phải theo format chuẩn ApiResponse
+    - Các endpoint có pagination phải trả về PaginatedData
+    - Authentication sử dụng Bearer Token trong header
+    - Khi có lỗi, vẫn phải trả về ApiResponse với success=false
+  version: 1.0.0
+  contact:
+    name: Frontend Team
+    email: chinh.dang5504@hcmut.edu.vn
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.hcmut-tutor.edu.vn/api/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: Xác thực và quản lý người dùng
+  - name: Student
+    description: API cho sinh viên
+  - name: Tutor
+    description: API cho gia sư
+  - name: Session
+    description: Quản lý buổi học
+  - name: Library
+    description: Quản lý thư viện tài liệu
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token từ SSO system
+
+  schemas:
+    # ============ BASE SCHEMAS ============
+    ApiResponse:
+      type: object
+      required:
+        - success
+        - statusCode
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          description: Trạng thái thành công/thất bại
+        statusCode:
+          type: integer
+          description: HTTP status code
+          example: 200
+        message:
+          type: string
+          description: Thông báo cho người dùng
+          example: "Success"
+        data:
+          type: object
+          description: Dữ liệu trả về (có thể là object, array, hoặc null)
+        timestamp:
+          type: string
+          format: date-time
+          description: Thời gian server xử lý request
+          example: "2025-11-23T16:26:31+07:00"
+
+    PaginatedData:
+      type: object
+      required:
+        - data
+        - totalItems
+        - currentPage
+        - totalPages
+        - pageSize
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+          description: Mảng dữ liệu của trang hiện tại
+        totalItems:
+          type: integer
+          description: Tổng số items trong database
+          example: 100
+        currentPage:
+          type: integer
+          description: Trang hiện tại (bắt đầu từ 1)
+          example: 1
+        totalPages:
+          type: integer
+          description: Tổng số trang
+          example: 10
+        pageSize:
+          type: integer
+          description: Số items mỗi trang
+          example: 10
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - statusCode
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Validation error"
+        data:
+          type: object
+          nullable: true
+          example: null
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    # ============ DOMAIN SCHEMAS ============
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "U001"
+        email:
+          type: string
+          format: email
+          example: "student@hcmut.edu.vn"
+        fullName:
+          type: string
+          example: "Nguyen Van A"
+        role:
+          type: string
+          enum: [student, tutor, admin]
+          example: "student"
+        avatar:
+          type: string
+          format: uri
+          example: "https://example.com/avatar.jpg"
+
+    StudentProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "S001"
+        fullName:
+          type: string
+          example: "Nguyen Van A"
+        email:
+          type: string
+          format: email
+          example: "student@hcmut.edu.vn"
+        phone:
+          type: string
+          example: "0901234567"
+        address:
+          type: string
+          example: "123 ABC Street, HCMC"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "2000-01-01"
+        sex:
+          type: string
+          enum: [Male, Female, Other]
+          example: "Male"
+        faculty:
+          type: string
+          example: "Computer Science"
+        improvementSubjects:
+          type: array
+          items:
+            type: string
+          example: ["Calculus", "Physics"]
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+
+    TutorProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "T001"
+        fullName:
+          type: string
+          example: "Nguyen Minh Tri"
+        email:
+          type: string
+          format: email
+          example: "tutor@hcmut.edu.vn"
+        phone:
+          type: string
+          example: "0901234567"
+        address:
+          type: string
+          example: "123 ABC Street, HCMC"
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1995-05-15"
+        sex:
+          type: string
+          enum: [Male, Female, Other]
+          example: "Male"
+        bio:
+          type: string
+          example: "Experienced tutor with 5 years of teaching"
+        teachingSubjects:
+          type: array
+          items:
+            type: string
+          example: ["Advanced Calculus", "Linear Algebra"]
+        rating:
+          type: number
+          format: float
+          example: 4.5
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+
+    Session:
+      type: object
+      required:
+        - id
+        - title
+        - tutorId
+        - tutorName
+        - date
+        - startTime
+        - endTime
+        - room
+        - status
+      properties:
+        id:
+          type: string
+          example: "S001"
+        title:
+          type: string
+          example: "Advanced Calculus Review"
+        description:
+          type: string
+          example: "Deep dive into calculus fundamentals"
+        tutorId:
+          type: string
+          example: "T001"
+        tutorName:
+          type: string
+          example: "Nguyen Minh Tri"
+        date:
+          type: string
+          format: date
+          example: "2025-11-23"
+        startTime:
+          type: string
+          pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+          example: "08:00"
+        endTime:
+          type: string
+          pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+          example: "10:00"
+        room:
+          type: string
+          example: "H-201"
+        currentEnrollment:
+          type: integer
+          example: 18
+        maxCapacity:
+          type: integer
+          example: 30
+        status:
+          type: string
+          enum: [Scheduled, Completed, Canceled]
+          example: "Scheduled"
+        enrolled:
+          type: boolean
+          description: "Chỉ có khi student đã đăng ký"
+          example: false
+
+    Document:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        DocumentTitle:
+          type: string
+          example: "Advanced Programming"
+        Author:
+          type: string
+          example: "Eric Mathes"
+        fileUrl:
+          type: string
+          format: uri
+          example: "https://example.com/document.pdf"
+        uploadedAt:
+          type: string
+          format: date-time
+        uploadedBy:
+          type: string
+          example: "T001"
+
+    RegisteredStudent:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "S001"
+        studentId:
+          type: string
+          example: "2152001"
+        fullName:
+          type: string
+          example: "Nguyen Van A"
+        email:
+          type: string
+          format: email
+        faculty:
+          type: string
+          example: "Computer Science"
+        enrolledAt:
+          type: string
+          format: date-time
+
+    ClassPetitionRequest:
+      type: object
+      required:
+        - tutorId
+        - subjectName
+      properties:
+        tutorId:
+          type: string
+          example: "T001"
+        subjectName:
+          type: string
+          example: "Advanced Calculus"
+        desiredDate:
+          type: string
+          format: date
+          example: "2025-12-01"
+        note:
+          type: string
+          example: "Prefer morning sessions"
+
+    Feedback:
+      type: object
+      required:
+        - rating
+        - comment
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: "Great session, very helpful!"
+
+# ============ PATHS ============
+paths:
+  # ============ AUTHENTICATION ============
+  /me:
+    get:
+      tags:
+        - Authentication
+      summary: Lấy thông tin user hiện tại
+      description: Lấy thông tin của user đang đăng nhập (từ token)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============ STUDENT APIs ============
+  /api/student/profile:
+    get:
+      tags:
+        - Student
+      summary: Lấy profile của student
+      description: |
+        Lấy thông tin profile của student đang đăng nhập.
+        **LƯU Ý:** Student KHÔNG được phép sửa thông tin cá nhân (read-only).
+        Thông tin cá nhân được đồng bộ từ hệ thống SSO.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StudentProfile'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/student/profile/subjects:
+    put:
+      tags:
+        - Student
+      summary: Cập nhật danh sách môn học cần cải thiện
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - improvementSubjects
+              properties:
+                improvementSubjects:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Calculus", "Physics"]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StudentProfile'
+
+  /student/sessions:
+    get:
+      tags:
+        - Student
+      summary: Lấy danh sách buổi học đã đăng ký
+      description: |
+        Lấy danh sách các buổi học mà student đã đăng ký.
+        Hỗ trợ filter theo date hoặc date range.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: date
+          in: query
+          description: Filter theo ngày cụ thể (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: startDate
+          in: query
+          description: Filter từ ngày (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Filter đến ngày (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/Session'
+
+  /student/sessions/{sessionId}/cancel:
+    post:
+      tags:
+        - Student
+      summary: Hủy đăng ký buổi học
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: "Session canceled successfully"
+
+  /student/sessions/{sessionId}/feedback:
+    post:
+      tags:
+        - Student
+      summary: Gửi feedback cho buổi học
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Feedback'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: "Feedback submitted successfully"
+
+  /student/requests:
+    post:
+      tags:
+        - Student
+      summary: Yêu cầu mở lớp mới
+      description: Student gửi yêu cầu mở lớp học với tutor cụ thể
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassPetitionRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          requestId:
+                            type: string
+                            example: "REQ001"
+                          message:
+                            type: string
+                            example: "Request submitted successfully"
+
+  # ============ SESSION APIs (Public & Enrollment) ============
+  /sessions/public:
+    get:
+      tags:
+        - Session
+      summary: Lấy danh sách buổi học công khai
+      description: Lấy tất cả buổi học có thể đăng ký (không cần auth)
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/Session'
+
+  /sessions/search:
+    get:
+      tags:
+        - Session
+      summary: Tìm kiếm buổi học
+      description: |
+        Tìm kiếm buổi học theo từ khóa.
+        **LƯU Ý:** Response trả về ĐÚNG là ApiResponse<PaginatedData<Session>>,
+        KHÔNG phải ApiResponse<PaginatedData<PaginatedData<Session>>>
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Từ khóa tìm kiếm
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/Session'
+
+  /sessions/{sessionId}/enroll:
+    post:
+      tags:
+        - Session
+      summary: Đăng ký buổi học
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: "Enrolled successfully"
+
+  # ============ TUTOR APIs ============
+  /tutor/{tutorId}:
+    get:
+      tags:
+        - Tutor
+      summary: Lấy thông tin chi tiết của tutor
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TutorProfile'
+
+  /tutor/{tutorId}/session:
+    get:
+      tags:
+        - Tutor
+      summary: Lấy danh sách buổi học của tutor
+      description: Lấy tất cả buổi học do tutor này dạy
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Session'
+
+  /tutors/search:
+    get:
+      tags:
+        - Tutor
+      summary: Tìm kiếm tutor
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Từ khóa tìm kiếm (tên, môn học, khoa)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/TutorProfile'
+
+  /tutor/sessions:
+    get:
+      tags:
+        - Tutor
+      summary: Lấy danh sách buổi học của tutor (authenticated)
+      description: Tutor lấy danh sách buổi học của chính mình
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: status
+          in: query
+          description: Filter theo status
+          schema:
+            type: string
+            enum: [Scheduled, Completed, Canceled]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/Session'
+
+  /tutor/sessions/{sessionId}:
+    get:
+      tags:
+        - Tutor
+      summary: Lấy chi tiết buổi học
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Session'
+
+  /tutor/sessions/{sessionId}/students:
+    get:
+      tags:
+        - Tutor
+      summary: Lấy danh sách sinh viên đã đăng ký buổi học
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 6
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/RegisteredStudent'
+
+  /tutor/sessions/{sessionId}/minutes:
+    post:
+      tags:
+        - Tutor
+      summary: Upload biên bản buổi học
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File PDF biên bản
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          fileUrl:
+                            type: string
+                            format: uri
+                          message:
+                            type: string
+                            example: "Minutes uploaded successfully"
+
+  # ============ TUTOR PROFILE APIs (Authenticated) ============
+  /api/tutor/profile:
+    get:
+      tags:
+        - Tutor
+      summary: Lấy profile của tutor
+      description: |
+        Lấy thông tin profile của tutor đang đăng nhập.
+        **LƯU Ý:** Tutor KHÔNG được phép sửa thông tin cá nhân (read-only).
+        Thông tin cá nhân được đồng bộ từ hệ thống SSO.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TutorProfile'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/tutor/profile/subjects:
+    put:
+      tags:
+        - Tutor
+      summary: Cập nhật danh sách môn học dạy
+      description: Tutor cập nhật danh sách các môn học mà mình có thể dạy
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - teachingSubjects
+              properties:
+                teachingSubjects:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Advanced Calculus", "Linear Algebra", "Discrete Math"]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TutorProfile'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  # ============ LIBRARY APIs ============
+  /library/documents:
+    get:
+      tags:
+        - Library
+      summary: Lấy danh sách tài liệu
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/PaginatedData'
+                          - type: object
+                            properties:
+                              data:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/Document'
+
+  /library/upload:
+    post:
+      tags:
+        - Library
+      summary: Upload tài liệu mới
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - title
+                - author
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File tài liệu (PDF, DOC, etc.)
+                title:
+                  type: string
+                  description: Tiêu đề tài liệu
+                author:
+                  type: string
+                  description: Tác giả
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Document'
+
+  /library/download/{documentId}:
+    get:
+      tags:
+        - Library
+      summary: Download tài liệu
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: File binary
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

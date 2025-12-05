@@ -1,5 +1,6 @@
 import { BASE_URL } from '@/utils/constant'
 import axios from 'axios'
+import Cookies from 'js-cookie' // Import thư viện xử lý cookie
 
 const PrivateAxios = axios.create({
   baseURL: BASE_URL,
@@ -8,6 +9,12 @@ const PrivateAxios = axios.create({
 
 PrivateAxios.interceptors.request.use(
   (config) => {
+    const token = Cookies.get('TOKEN')
+
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+
     return config
   },
   (error) => {
@@ -20,6 +27,7 @@ PrivateAxios.interceptors.response.use(
     return response
   },
   (error) => {
+    console.error(error)
     return Promise.reject(error)
   }
 )
